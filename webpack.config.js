@@ -1,11 +1,18 @@
 const path = require('path');
 const webpack = require('webpack');
-const { VueLoaderPlugin } = require('vue-loader')
-const ESLintPlugin = require('eslint-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const TerserPlugin = require('terser-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
-// Builds web module. Only really used in example code / static site.
+const chalk = require('chalk');
+
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+
   return {
     mode: isProduction ? 'production' : 'development',
     entry: {
@@ -23,7 +30,10 @@ module.exports = (env, argv) => {
       hot: true,
       open: 'example/index.html',
       client: {
-        overlay: true,
+        overlay: {
+          warnings: false,
+          errors: true,
+        }
       },
       devMiddleware: {
         writeToDisk: true,
@@ -43,6 +53,11 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+        {
           test: /\.vue$/,
           loader: 'vue-loader'
         },
@@ -60,22 +75,56 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new VueLoaderPlugin(),
+      process.env.ANALYZE && new BundleAnalyzerPlugin(),
+      new LodashModuleReplacementPlugin(),
       new webpack.EnvironmentPlugin({
-        // these are default values
-        DRAGGABLE_DEBUG: false,
-        NODE_ENV: ['development', 'production'].includes(argv.mode) ? argv.mode : 'production'
+        DRAGGABLE_DEBUG: !isProduction,
+        NODE_ENV: isProduction ? 'production' : 'development'
       }),
-      // Scope hoisting
       new webpack.optimize.ModuleConcatenationPlugin(),
       new ESLintPlugin({
         extensions: ['js', 'vue', 'ts', 'tsx'],
       }),
-    ],
+      new ProgressBarPlugin({
+        format: `  build [:bar] ${chalk.green.bold(':percent')} (:elapsed seconds)`,
+        clear: false,
+      }),
+      {
+        apply: (compiler) => {
+          compiler.hooks.done.tap('DonePlugin', () => {
+          });
+        },
+      },
+      new ForkTsCheckerWebpackPlugin()
+    ].filter(Boolean),
     optimization: {
       minimize: isProduction,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false, // 删除注释
+          },
+          compress: {
+            drop_console: true, // 删除console.log
+          },
+        },
+        extractComments: false, // 不将注释提取到单独的文件
+      })].filter(() => isProduction)
     },
     stats: {
       errorDetails: true,
+      colors: true,
+      hash: false,
+      version: true,
+      timings: false,
+      assets: isProduction,
+      chunks: isProduction,
+      modules: isProduction,
+      reasons: false,
+      children: false,
+      source: false,
+      errors: true,
+      warnings: true,
     }
   }
 };

@@ -1,3 +1,4 @@
+const isProduction = process.env.NODE_ENV === 'production'
 module.exports = {
   root: true,
   env: {
@@ -25,26 +26,12 @@ module.exports = {
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': isProduction ? 'warn' : 'off',
+    'no-debugger': isProduction ? 'warn' : 'off',
 
     'vue/no-unused-vars': 'warn',
-    'vue/no-unused-components': 'warn',
-    'vue/singleline-html-element-content-newline': 'off',
+    // 'vue/no-unused-components': 'warn',
     'vue/multi-word-component-names': 'off',
-    'no-warning-comments': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    // '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': isProduction ? 'error' : 'warn'
   },
-  overrides: [
-    {
-      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
-      env: {
-        jest: true,
-      },
-    },
-  ]
 };
