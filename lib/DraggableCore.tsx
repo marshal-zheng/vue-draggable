@@ -1,3 +1,37 @@
+/**
+ * DraggableCore is a low-level wrapper for draggable functionality, allowing for more fine-grained control over drag events.
+ * It provides the core functionality needed to make an element draggable, such as mouse and touch event handling, without
+ * imposing any specific styling or structure on the element being dragged. It's designed to be used as a building block
+ * for more complex draggable components.
+ *
+ * @compatConfig {MODE: 3} - Compatibility mode setting for Vue 3.
+ * @name DraggableCore - The name of the component.
+ * @inheritAttrs false - Instructs Vue not to add inherited attributes to the component's root element.
+ *
+ * @props
+ * - `allowAnyClick` (Boolean): Allows dragging using any mouse button. Default is `false`, which means only the left mouse button can initiate dragging.
+ * - `disabled` (Boolean): Disables the draggable functionality when set to `true`.
+ * - `enableUserSelectHack` (Boolean): Enables a hack that prevents user text selection during dragging. Default is `true`.
+ * - `startFn` (Function): A function that is called at the start of a drag operation. Default is a no-op function.
+ * - `dragFn` (Function): A function that is called during a drag operation. Default is a no-op function.
+ * - `stopFn` (Function): A function that is called at the end of a drag operation. Default is a no-op function.
+ * - `scale` (Number): The scale of the draggable element, affecting drag sensitivity. Default is `1`.
+ * - `cancel` (String): CSS selector that defines elements within the draggable element that should prevent dragging when clicked.
+ * - `offsetParent` (HTMLElement): The offset parent of the draggable element, used to calculate drag distances. Must be a DOM Node.
+ * - `grid` (Array[Number, Number]): Specifies a grid [x, y] to which the element's movement will be snapped.
+ * - `handle` (String): CSS selector that defines the handle element that initiates drag actions. If not defined, the entire element is draggable.
+ * - `nodeRef` (Object): A Vue ref object pointing to the draggable element. Used when direct DOM access is necessary.
+ *
+ * @setup
+ * The setup function initializes the component's reactive state and event handlers for drag operations. It handles the
+ * initialization and cleanup of event listeners for mouse and touch events that control the drag behavior.
+ *
+ * @returns
+ * The setup function returns a render function that clones the component's default slot's first child, applying the necessary
+ * event handlers and a ref to the root element to enable dragging functionality.
+ *
+ * Note: This component does not render any DOM elements itself; it merely wraps its default slot's content with draggable functionality.
+ */
 import {
   defineComponent,
   cloneVNode,
@@ -5,7 +39,6 @@ import {
   onMounted,
   reactive,
   onUnmounted,
-  renderSlot,
   isVNode,
 } from 'vue';
 import VueTypes from 'vue-types'
@@ -20,9 +53,17 @@ import {
   removeUserSelectStyles
 } from './utils/domFns';
 import { createCoreData, getControlPosition, snapToGrid } from './utils/positionFns';
-import { prop_is_not_node } from './utils/shims';
+import { propIsNotNode } from './utils/shims';
 import log from './utils/log';
 import { EventHandler, MouseTouchEvent, DraggableData, DraggableCoreDefaultProps, DraggableCoreProps } from './utils/types'
+
+interface IState {
+  dragging: boolean
+  lastX: number
+  lastY: number
+  touchIdentifier: number | null
+  mounted: boolean
+}
 
 // Simple abstraction for dragging events names.
 const eventsFor = {
@@ -38,6 +79,7 @@ const eventsFor = {
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const defaultDraggableEventHandler = (e: MouseEvent, data: DraggableData): void | boolean => true
 const funcVoid = function () {}
 
@@ -57,10 +99,10 @@ export const draggableCoreDefaultProps: DraggableCoreDefaultProps = {
 export const draggableCoreProps: DraggableCoreProps = {
   ...draggableCoreDefaultProps,
   cancel: VueTypes.string,
-  offsetParent: VueTypes.custom(prop_is_not_node, 'Draggable\'s offsetParent must be a DOM Node.'),
+  offsetParent: VueTypes.custom(propIsNotNode, 'Draggable\'s offsetParent must be a DOM Node.'),
   grid: VueTypes.arrayOf(VueTypes.number),
   handle: VueTypes.string,
-  nodeRef: VueTypes.object.def(null)
+  nodeRef: VueTypes.object.def(() => null)
 }
 
 const componentName = 'DraggableCore'
@@ -71,14 +113,10 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     ...draggableCoreProps,
-    // style: dontSetMe('style', componentName),
-    // class: dontSetMe('class', componentName),
-    // transform: dontSetMe('transform', componentName),
   },
   setup(props, { slots, emit }){
     const rootElement = ref(null)
-    const displayName: string = 'DraggableCore';
-    const state = reactive({
+    const state: IState = reactive({
       dragging: false,
       // Used while dragging to determine deltas.
       lastX: NaN,
@@ -183,14 +221,14 @@ export default defineComponent({
       // Get nodes. Be sure to grab relative document (could be iframed)
       const thisNode = findDOMNode();
       if (!get(thisNode, 'ownerDocument.body')) {
-        throw new Error('<DraggableCore> not mounted on DragStart!');
+        // throw new Error('<DraggableCore> not mounted on DragStart!');
       }
       const { ownerDocument } = thisNode;
   
       // Short circuit if handle or cancel prop was provided and selector doesn't match.
       if (
         props.disabled
-        || (!(e.target instanceof ownerDocument.defaultView.Node))
+        || (!(e.target instanceof ownerDocument.defaultView!.Node))
         || (props.handle && !matchesSelectorAndParentsTo(e.target, props.handle, thisNode))
         || (props.cancel && matchesSelectorAndParentsTo(e.target, props.cancel, thisNode))) {
         return;
@@ -217,7 +255,7 @@ export default defineComponent({
   
       // Call event handler. If it returns explicit false, cancel.
       log('calling', props.startFn);
-      const shouldUpdate = props.startFn(e, coreEvent);
+      const shouldUpdate = props.startFn?.(e, coreEvent);
       if (shouldUpdate === false || state.mounted === false) return;
 
       // Add a style to the body to disable user-select. This prevents text from
@@ -242,11 +280,6 @@ export default defineComponent({
       dragEventFor = eventsFor.mouse; // on touchscreen laptops we could switch back to mouse
       return handleDragStart(e);
     };
-
-    // const onMoueDown = (e: MouseTouchEvent) => {
-    //   dragEventFor = eventsFor.mouse // on touchscreen laptops we could switch back to mouse
-    //   return handleDragStart(e)
-    // }
 
     const onMouseup: EventHandler<MouseTouchEvent> = e => {
       dragEventFor = eventsFor.mouse;
@@ -293,14 +326,8 @@ export default defineComponent({
     });
 
     return () => {
-      const slotContent = renderSlot(slots, 'default');
-      let children = slotContent.children;
-
-      if (!Array.isArray(children)) {
-        children = []; // 如果不是数组，则使用空数组
-      }
-
-      const child = get(children, '0.children[0]')
+      const child = slots.default ? slots.default()[0] : null;
+      if (!child) return null;
       const clonedChildren = isVNode(child) ? cloneVNode(child, { onMousedown, onMouseup, onTouchend, ref: rootElement }) : child;
 
       return clonedChildren;

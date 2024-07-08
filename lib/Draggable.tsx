@@ -1,11 +1,44 @@
+/**
+ * Draggable is a Vue component that allows elements to be dragged and dropped.
+ * It extends DraggableCore by adding Vue-specific props for more customized behavior.
+ * 
+ * Props:
+ * - axis: Specifies the axis along which the element can be dragged. Options are 'both', 'x', 'y', or 'none'. Default is 'both'.
+ * - bounds: Constrains the draggable area. Can be an object specifying left, right, top, and bottom bounds, a string selector, or false for no bounds. Default is false.
+ * - defaultClassName: The default class name applied to the element. Default is 'vue-draggable'.
+ * - defaultClassNameDragging: The class name applied to the element while dragging. Default is 'vue-draggable-dragging'.
+ * - defaultClassNameDragged: The class name applied to the element after it has been dragged. Default is 'vue-draggable-dragged'.
+ * - defaultPosition: The default position of the element. An object with x and y properties. Default is {x: 0, y: 0}.
+ * - positionOffset: Offset of the position. An object with x and y properties, each can be a number or a string. Default is {x: 0, y: 0}.
+ * - position: Controls the position of the draggable element. An object with x and y properties.
+ * - cancel: Specifies a selector to be used to prevent drag initialization.
+ * - offsetParent: Specifies the offset parent of the draggable element. Must be a DOM Node.
+ * - grid: Specifies the grid to snap the draggable element to during drag. An array of two numbers.
+ * - handle: Specifies a selector to be used as the handle that initiates drag.
+ * - nodeRef: A reference to the draggable node.
+ * - allowAnyClick: Allows dragging to be initiated with any mouse button. Default is false.
+ * - disabled: If true, the element cannot be dragged. Default is false.
+ * - enableUserSelectHack: Enables a hack that prevents text selection during drag. Default is true.
+ * - startFn, dragFn, stopFn: Functions that are called on drag start, during drag, and on drag stop, respectively. Each defaults to a no-op function.
+ * - scale: The scale of the draggable element. Default is 1.
+ * 
+ * Usage:
+ * Wrap a single child component or element with <Draggable> to make it draggable. Configure behavior with props.
+ * 
+ * Example:
+ * <Draggable axis="x" :defaultPosition="{x: 100, y: 0}">
+ *   <div>Drag me!</div>
+ * </Draggable>
+ * 
+ * Note:
+ * This component requires Vue 3 and is designed to work within a Vue 3 application.
+ */
 import {
   defineComponent,
   reactive,
   onMounted,
   onUnmounted,
   ref,
-  renderSlot,
-  isVNode,
   cloneVNode,
 } from 'vue'
 import get from 'lodash/get'
@@ -16,7 +49,7 @@ import {canDragX, canDragY, createDraggableData, getBoundPosition} from './utils
 import {dontSetMe} from './utils/shims';
 import DraggableCore from './DraggableCore';
 import log from './utils/log';
-import type { DraggableEventHandler } from './utils/types';
+import type { DraggableEventHandler, PositionOffsetControlPosition } from './utils/types';
 import { draggableCoreProps } from './DraggableCore';
 
 export const draggableProps = {
@@ -46,7 +79,7 @@ export const draggableProps = {
   position: VueTypes.shape({
     x: VueTypes.number,
     y: VueTypes.number
-  }).def(null)
+  }).def(undefined)
 }
 
 const componentName = 'Draggable'
@@ -106,7 +139,7 @@ const Draggable = defineComponent({
       log('Draggable: onDragStart: %j', coreData);
   
       // Short-circuit if user's callback killed it.
-      const shouldStart = props.startFn(e, createDraggableData({ props, state }, coreData));
+      const shouldStart = props.startFn?.(e, createDraggableData({ props, state }, coreData));
       // Kills start event on core as well, so move handlers are never bound.
       if (shouldStart === false) return false;
 
@@ -149,12 +182,12 @@ const Draggable = defineComponent({
         // Update the event we fire to reflect what really happened after bounds took effect.
         uiData.x = newState.x;
         uiData.y = newState.y;
-        uiData.deltaX = newState.x - state.x;
-        uiData.deltaY = newState.y - state.y;
+        uiData.deltaX = newState.x - (state.x ?? 0);
+        uiData.deltaY = newState.y - (state.y ?? 0);
       }
   
       // Short-circuit if user's callback killed it.
-      const shouldUpdate = props.dragFn(e, uiData);
+      const shouldUpdate = props.dragFn?.(e, uiData);
       if (shouldUpdate === false) return false;
 
       Object.keys(newState).forEach((key: string) => {
@@ -166,15 +199,21 @@ const Draggable = defineComponent({
       if (!state.dragging) return false;
   
       // Short-circuit if user's callback killed it.
-      const shouldContinue = props.stopFn(e, createDraggableData({ props, state }, coreData));
+      const shouldContinue = props.stopFn?.(e, createDraggableData({ props, state }, coreData));
       if (shouldContinue === false) return false;
   
       log('Draggable: onDragStop: %j', coreData);
   
-      const newState = {
+      const newState: {
+        dragging: boolean,
+        slackX: number,
+        slackY: number,
+        x?: number,
+        y?: number 
+      } = {
         dragging: false,
         slackX: 0,
-        slackY: 0
+        slackY: 0,
       };
   
       // If this is a controlled component, the result of this operation will be to
@@ -182,8 +221,8 @@ const Draggable = defineComponent({
       const controlled = Boolean(props.position);
       if (controlled) {
         const { x, y } = props.position;
-        newState.x = x;
-        newState.y = y;
+        newState.x = x as number;
+        newState.y = y as number;
       }
 
       Object.keys(newState).forEach((key: string) => {
@@ -192,10 +231,10 @@ const Draggable = defineComponent({
     };
 
     return () => {
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       const {
         axis,
         bounds,
-        // children,
         defaultPosition,
         defaultClassName,
         defaultClassNameDragging,
@@ -205,9 +244,10 @@ const Draggable = defineComponent({
         scale,
         ...draggableCoreProps
       } = props;
+      /* eslint-enable @typescript-eslint/no-unused-vars */
 
-      let style = {};
-      let svgTransform = null;
+      let style: unknown = {};
+      let svgTransform = '';
 
       const controlled = Boolean(position);
       const draggable = !controlled || state.dragging;
@@ -216,32 +256,25 @@ const Draggable = defineComponent({
 
       const transformOpts = {
         // Set left if horizontal drag is enabled
-        x: canDragX({ props }) && draggable ?
-          state.x :
-          validPosition.x,
+        x: (canDragX({ props }) && draggable ?
+        state.x :
+        validPosition.x) ?? 0,
   
         // Set top if vertical drag is enabled
-        y: canDragY({ props }) && draggable ?
-          state.y :
-          validPosition.y
+        y: (canDragY({ props }) && draggable ?
+        state.y :
+        validPosition.y) ?? 0
       };
 
       // If this element was SVG, we use the `transform` attribute.
       if (state.isElementSVG) {
-        svgTransform = createSVGTransform(transformOpts, positionOffset);
+        svgTransform = createSVGTransform(transformOpts, positionOffset as PositionOffsetControlPosition);
       } else {
         // Add a CSS transform to move the element around. This allows us to move the element around
         // without worrying about whether or not it is relatively or absolutely positioned.
         // If the item you are dragging already has a transform set, wrap it in a <span> so <Draggable>
         // has a clean slate.
-        style = createCSSTransform(transformOpts, positionOffset);
-      }
-
-      const slotContent = renderSlot(slots, 'default');
-      let children = slotContent.children;
-
-      if (!Array.isArray(children)) {
-        children = []; // 如果不是数组，则使用空数组
+        style = createCSSTransform(transformOpts, positionOffset as PositionOffsetControlPosition);
       }
 
       // Mark with class while dragging
@@ -250,13 +283,14 @@ const Draggable = defineComponent({
         [defaultClassNameDragged]: state.dragged
       });
 
-      const clonedChildren = children.flatMap(child => {
-        return isVNode(child) ? cloneVNode(child, {
-          class: className,
-          style: style,
-          transform: svgTransform,
-        }) : child;
+      const child = slots.default ? slots.default()[0] : null;
+      if (!child) return null;
+      const clonedChildren = cloneVNode(child, {
+        class: className,
+        style,
+        transform: svgTransform
       });
+
 
       const coreProps = { ...draggableCoreProps, startFn: onDragStart, dragFn: onDrag, stopFn: onDragStop }
       return (

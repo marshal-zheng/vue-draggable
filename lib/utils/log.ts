@@ -1,3 +1,3 @@
-export default function log(...args: any): void {
-  // if (process.env.DRAGGABLE_DEBUG) console.log(...args);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function log(...args): void {
 }

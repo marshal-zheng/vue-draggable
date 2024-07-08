@@ -9,6 +9,11 @@ interface DraggableData {
   lastX: number, lastY: number
 }
 
+export interface CompatibleElement extends Node {
+  detachEvent?: (event: string, handler: EventListener) => void;
+  attachEvent?: (event: string, handler: EventListener) => void;
+}
+
 interface Bounds {
   left?: number, top?: number, right?: number, bottom?: number
 }
@@ -38,6 +43,8 @@ type DraggableCoreDefaultProps = {
   // stopFn: DraggableEventHandler,
   scale: typeof VueTypes.number
 };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type DraggableCoreAdditionalProps = {
   cancel: typeof VueTypes.string,
   offsetParent: any,
@@ -45,9 +52,11 @@ type DraggableCoreAdditionalProps = {
   handle: typeof VueTypes.string,
   nodeRef?: any 
 };
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 type DraggableCoreProps = DraggableCoreDefaultProps & DraggableCoreAdditionalProps
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type DraggableAdditionalProps = {
   axis: typeof VueTypes.string,
   bounds: typeof VueTypes.object,
@@ -58,6 +67,7 @@ type DraggableAdditionalProps = {
   positionOffset: any
   defaultPosition: any
 }
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 type DraggableProps = DraggableCoreProps & DraggableAdditionalProps
 
