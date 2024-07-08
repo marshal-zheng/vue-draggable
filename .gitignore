@@ -2,3 +2,13 @@
 *.iml
 node_modules/
 build/
+docs/
+
+# OS
+.DS_Store
+.idea
+.editorconfig
+.npmrc
+package-lock.json
+
+pnpm-lock.yaml
