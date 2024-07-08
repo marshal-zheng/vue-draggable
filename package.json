@@ -1,6 +1,6 @@
 {
   "name": "@marsio/vue-draggable",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Vue draggable component",
   "main": "build/cjs/cjs.js",
   "unpkg": "build/web/vue-draggable.min.js",
@@ -80,8 +80,7 @@
     "minimist": "^1.2.5"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "lint-staged": {
     "lib/**/*.{js,vue,ts,tsx}": "eslint --fix"
