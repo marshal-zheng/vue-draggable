@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Husky pre-commit and commit-msg hooks
 - Update script sources in index.html
 - Remove LICENSE and Makefile
+- Update Readme
 
 ### Refactoring
 
