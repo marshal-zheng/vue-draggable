@@ -89,8 +89,7 @@ const release = async () => {
 // publish the package
 const publish = () => {
   build();
-  execSync('git push --tags origin HEAD:main');
-  execSync('yarn publish');
+  execSync('npm publish');
   console.log(chalk.green('Published to npm'));
 }
 
