@@ -1,10 +1,88 @@
-# Vue-Draggable
+# Vue-Draggable 
 
-
+Draggable and DraggableCore are **Vue3** components designed to make elements draggable within a Vue application. They provide a flexible and powerful way to add drag-and-drop functionality to your Vue components.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/6365230/95649276-f3a02480-0b06-11eb-8504-e0614a780ba4.gif" />
 </p>
+
+## Features
+- **Drag Handlers**: Offers customizable drag handlers (`startFn`, `dragFn`, `stopFn`) that allow developers to hook into drag start, during drag, and drag stop events, providing flexibility in handling these events.
+- **Position Control**: Supports controlled (`position`) and uncontrolled (`defaultPosition`) modes for element positioning, giving developers the choice to manage the draggable element's position externally or let the component handle it internally.
+- **Axis Constraints**: Allows dragging to be constrained along a specific axis (`axis`) with options for 'x', 'y', 'both', or 'none', enabling more precise control over the draggable behavior.
+- **Bounds Limitation**: Supports constraining the draggable area within specified bounds (`bounds`), which can be defined as an object with `left`, `right`, `top`, and `bottom` properties, a selector string, or `false` for no bounds.
+- **Position Offset**: Supports an offset for the draggable position (`positionOffset`), enabling adjustments to the element's position without altering its actual position properties.
+-  **Grid Snapping**: Allows the draggable element to snap to a grid (`grid` prop), facilitating alignment and precise placement during dragging.
+- **Accessibility and Interaction**: Includes props for disabling the draggable functionality (`disabled`), allowing any mouse button to initiate dragging (`allowAnyClick`), and enabling a hack to prevent text selection during drag (`enableUserSelectHack`), enhancing usability and accessibility.
+
+## Quick Start
+
+To quickly start using `@marsio/vue-draggable`, follow the steps below:
+
+### Step 1: Installation
+
+First, you need to install the package. Run the following command in your project directory:
+
+```bash
+npm install @marsio/vue-draggable
+```
+
+or if you prefer using Yarn:
+
+```bash
+yarn add @marsio/vue-draggable
+```
+
+or if you prefer using Pnpm:
+
+```bash
+pnpm add @marsio/vue-draggable
+```
+
+
+### Step 2: Importing
+
+In your Vue component, import `@marsio/vue-draggable`:
+
+```javascript
+import Draggable from '@marsio/vue-draggable';
+```
+
+### Step 3: Using `@marsio/vue-draggable`
+
+Now, you can use the `Draggable` component in your Vue application. Wrap any element with `<Draggable>` to make it draggable:
+
+```vue
+<template>
+  <Draggable>
+    <div class="draggable-item">I can now be moved around!</div>
+  </Draggable>
+</template>
+
+<script>
+import Draggable from '@marsio/vue-draggable';
+
+export default {
+  components: {
+    Draggable
+  }
+}
+</script>
+
+<style>
+.draggable-item {
+  /* Your styles for draggable items */
+}
+</style>
+```
+
+### Step 4: Enjoy!
+
+That's it! You've successfully integrated draggable functionality into your Vue application. Customize it further according to your needs.
+
+For more detailed documentation, refer to the [Technical Documentation](#technical-documentation) section.
+
+
 
 A simple component for making elements draggable.
 
@@ -25,20 +103,6 @@ A simple component for making elements draggable.
 - [DraggableCore](#draggablecore)
 - [DraggableCore API](#draggablecore-api)
 
-
-
-### Installing
-
-```bash
-$ npm install @marsio/vue-draggable
-```
-
-If you aren't using browserify/webpack, a
-[UMD version of vue-draggable](dist/vue-draggable.js) is available. It is updated per-release only.
-This bundle is also what is loaded when installing from npm. It expects external Vue3.
-
-If you want a UMD version of the latest `master` revision, you can generate it yourself from master by cloning this
-repository and running `$ make`. This will create umd dist files in the `build/` folder.
 
 ### Exports
 
@@ -201,28 +265,6 @@ dragFn: DraggableEventHandler,
 // Called when dragging stops.
 stopFn: DraggableEventHandler,
 
-// import { defineComponent, ref } from 'vue';
-// import Draggable from 'vue-draggable'
-
-// const Component1 = defineComponent({
-//   props: {
-//     title: String
-//   },
-//   setup(props) {
-//     return { title };
-//   }
-// });
-
-// export default defineComponent({
-//   setup(props) {
-//     const nodeRef = ref(null)
-//     return () => (
-//       <DraggableCore dragFn={onDrag} nodeRef={nodeRef}>
-//         <Component1 ref={nodeRef} />
-//       </DraggableCore>
-//     )
-//   }
-// });
 // `nodeRef` is also available on <DraggableCore>.
 nodeRef: Ref<HTMLElement | null>,
 
@@ -301,19 +343,17 @@ Drag callbacks (`startFn`, `dragFn`, `stopFn`) are called with the [same argumen
 
 ----
 
-### Contributing
+### Modern browsers.
 
-- Fork the project
-- Run the project in development mode: `$ npm run dev`
-- Make changes.
-- Update README with appropriate docs.
-- Commit and PR
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
+| --- | --- | --- | --- | --- |
+| Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
 ### Release checklist
 
 - Update CHANGELOG
-- `make release-patch`
-- `make publish`
+- `pnpm release`
+- `pnpm publish`
 
 ### License
 
