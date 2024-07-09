@@ -1,5 +1,5 @@
-declare module 'vue-draggable' {
-  import { DefineComponent, PropType } from 'vue';
+declare module '@marsio/vue-draggable' {
+  import { DefineComponent, PropType, Ref } from 'vue';
 
   export interface DraggableBounds {
     left?: number;
@@ -19,21 +19,20 @@ declare module 'vue-draggable' {
 
   export type ControlPosition = { x: number; y: number };
   export type PositionOffsetControlPosition = { x: number | string; y: number | string };
+  export type DraggableEventHandler = (e: MouseEvent, data: DraggableData) => void | false
 
   export interface DraggableCoreProps {
     allowAnyClick: boolean,
     cancel: string,
-    children?: React.ReactNode,
     disabled: boolean,
     enableUserSelectHack: boolean,
     offsetParent: HTMLElement,
     grid: [number, number],
     handle: string,
-    nodeRef?: React.RefObject<HTMLElement>,
-    onStart: DraggableEventHandler,
-    onDrag: DraggableEventHandler,
-    onStop: DraggableEventHandler,
-    onMouseDown: (e: MouseEvent) => void,
+    nodeRef?: Ref<HTMLElement | undefined>,
+    startFn: DraggableEventHandler,
+    dragFn: DraggableEventHandler,
+    stopFn: DraggableEventHandler,
     scale: number
   }
 

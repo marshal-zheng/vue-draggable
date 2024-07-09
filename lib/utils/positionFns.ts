@@ -20,7 +20,7 @@ const cloneBounds = (bounds: Bounds): Bounds => {
 }
 
 // This one's a bit tricky. We're trying to find the actual DOM node for a draggable component.
-// It's using some internal React stuff, so don't worry if it looks a bit weird.
+// It's using some internal stuff, so don't worry if it looks a bit weird.
 const findDOMNode = (draggable: Partial<DraggableInstance> | Partial<DraggableCoreInstance>): HTMLElement => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return draggable.findDOMNode()

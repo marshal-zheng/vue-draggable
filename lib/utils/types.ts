@@ -35,12 +35,9 @@ type DraggableCoreDefaultProps = {
   allowAnyClick: typeof VueTypes.bool,
   disabled: typeof VueTypes.bool,
   enableUserSelectHack: typeof VueTypes.bool,
-  // startFn: DraggableEventHandler,
   startFn: typeof VueTypes.func,
   dragFn: typeof VueTypes.func,
   stopFn: typeof VueTypes.func,
-  // dragFn: DraggableEventHandler,
-  // stopFn: DraggableEventHandler,
   scale: typeof VueTypes.number
 };
 
