@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update script sources in index.html
 - Remove LICENSE and Makefile
 - Update Readme
+- Update npm publish command in script.js
 
 ### Refactoring
 
