@@ -57,7 +57,7 @@
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "fs-extra": "^11.2.0",
     "husky": "^9.0.11",
-    "inquirer": "^10.0.1",
+    "inquirer": "^8.2.6",
     "jasmine-core": "^5.1.1",
     "lint-staged": "^15.2.7",
     "lodash-webpack-plugin": "^0.11.6",
@@ -88,6 +88,7 @@
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "git-cliff": "^2.4.0",
     "lodash": "^4.17.21",
     "vue": "^3.2.23",
     "vue-types": "^5.1.1"
