@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - (July 10, 2024)
+
+### Bug Fixes
+
+- Add inquirer package as a new dependency
+
+### Chores
+
+- Add lodash plugin to Babel configuration and update ESLint rules
+- Update findDOMNode function to remove reference to React internals
+- Update inquirer package to version 8.2.6
+- Update git-cliff package to version 2.4.0
+
+### Refactoring
+
+- Optimize Draggable and add js doc to utils
+
 ## [1.0.3] - (July 09, 2024)
 
 ### Chores
@@ -21,5 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+[1.0.4]: https://github.com///compare/v1.0.3..v1.0.4
 [1.0.3]: https://github.com///releases/tag/v1.0.3
 
