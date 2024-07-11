@@ -1,6 +1,3 @@
-import VueTypes, { VueTypeDef } from 'vue-types'
-
-type ValidatorFunction<T> = (value: T) => boolean
 
 /**
  * Searches for an element in an array or TouchList that satisfies the provided callback function.
@@ -51,12 +48,18 @@ export function int (a: string): number {
  * Creates a custom Vue prop type that fails validation.
  * @param {string} propsName - The name of the prop.
  * @param {string} componentName - The name of the component.
- * @returns {VueTypeDef<T>} A VueTypeDef that always fails validation.
  */
-export function dontSetMe <T> (propsName: string, componentName: string): VueTypeDef<T> {
-  const failedPropType: ValidatorFunction<T> = () => !propsName
-  const message = `Invalid prop ${propsName} passed to ${componentName} - do not set this, set it on the child.`
-  return VueTypes.custom(failedPropType, message)
+export function dontSetMe(propsName: string, componentName: string) {
+  return {
+    validator(): boolean {
+      if (!propsName) {
+        console.error(`Invalid prop ${propsName} passed to ${componentName} - do not set this, set it on the child.`);
+        return false;
+      }
+      // 如果有其他验证逻辑，可以在这里添加
+      return true;
+    }
+  };
 }
 
 /**

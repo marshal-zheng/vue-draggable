@@ -1,6 +1,8 @@
-import VueTypes from 'vue-types'
+import { Ref } from 'vue'
 
 type DraggableEventHandler = (e: MouseEvent, data: DraggableData) => void | false
+
+type DraggableEvent = MouseEvent | TouchEvent
 
 interface DraggableData {
   node: HTMLElement,
@@ -9,10 +11,12 @@ interface DraggableData {
   lastX: number, lastY: number
 }
 
-export interface CompatibleElement extends Node {
+interface CompatibleElement extends Node {
   detachEvent?: (event: string, handler: EventListener) => void;
   attachEvent?: (event: string, handler: EventListener) => void;
 }
+
+type Axis = 'both' | 'x' | 'y' | 'none';
 
 interface Bounds {
   left?: number, top?: number, right?: number, bottom?: number
@@ -32,37 +36,35 @@ class TouchEvent2 extends TouchEvent {
 
 type MouseTouchEvent = MouseEvent & TouchEvent2
 type DraggableCoreDefaultProps = {
-  allowAnyClick: typeof VueTypes.bool,
-  disabled: typeof VueTypes.bool,
-  enableUserSelectHack: typeof VueTypes.bool,
-  startFn: typeof VueTypes.func,
-  dragFn: typeof VueTypes.func,
-  stopFn: typeof VueTypes.func,
-  scale: typeof VueTypes.number
+  allowAnyClick: boolean,
+  disabled: boolean,
+  enableUserSelectHack: boolean,
+  startFn: DraggableEventHandler,
+  dragFn: DraggableEventHandler,
+  stopFn: DraggableEventHandler,
+  scale: DraggableEventHandler
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type DraggableCoreAdditionalProps = {
-  cancel: typeof VueTypes.string,
-  offsetParent: any,
-  grid: any,
-  handle: typeof VueTypes.string,
-  nodeRef?: any 
+  cancel: string,
+  offsetParent: HTMLElement,
+  grid: [number, number],
+  handle: string,
+  nodeRef?: Ref<HTMLElement | null> 
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 type DraggableCoreProps = DraggableCoreDefaultProps & DraggableCoreAdditionalProps
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type DraggableAdditionalProps = {
-  axis: typeof VueTypes.string,
-  bounds: typeof VueTypes.object,
-  defaultClassName: typeof VueTypes.string
-  defaultClassNameDragging: typeof VueTypes.string
-  defaultClassNameDragged: typeof VueTypes.string
-  position: any
-  positionOffset: any
-  defaultPosition: any
+  axis: Axis,
+  bounds: Bounds,
+  defaultClassName: string
+  defaultClassNameDragging: string
+  defaultClassNameDragged: string
+  position: ControlPosition
+  positionOffset: PositionOffsetControlPosition
+  defaultPosition: PositionOffsetControlPosition
 }
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -71,6 +73,14 @@ type DraggableProps = DraggableCoreProps & DraggableAdditionalProps
 type PrimaryKey = string | number | symbol
 
 type Kv<T = any> = Record<PrimaryKey, T>;
+
+interface DraggableBounds {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+}
+
 
 export {
   TouchEvent2,
@@ -86,5 +96,9 @@ export {
   MouseTouchEvent,
   DraggableCoreProps,
   DraggableProps,
-  Kv
+  Kv,
+  DraggableBounds,
+  CompatibleElement,
+  DraggableEvent,
+  Axis
 }

@@ -40,46 +40,78 @@ import {
   onUnmounted,
   ref,
   cloneVNode,
+  PropType,
+  DefineComponent
 } from 'vue'
 import get from 'lodash/get'
-import VueTypes from 'vue-types'
 import clsx from 'clsx';
 import {createCSSTransform, createSVGTransform} from './utils/domFns';
 import {canDragX, canDragY, createDraggableData, getBoundPosition} from './utils/positionFns';
 import {dontSetMe} from './utils/shims';
 import DraggableCore from './DraggableCore';
 import log from './utils/log';
-import type { DraggableEventHandler, PositionOffsetControlPosition } from './utils/types';
+import type { DraggableEventHandler, PositionOffsetControlPosition, DraggableBounds, ControlPosition, Axis, DraggableProps } from './utils/types';
 import { draggableCoreProps } from './DraggableCore';
 
 export const draggableProps = {
   ...draggableCoreProps,
-  axis: VueTypes.oneOf(['both', 'x', 'y', 'none']).def('both'),
-  bounds: VueTypes.oneOfType([
-    VueTypes.shape({
-      left: VueTypes.number,
-      right: VueTypes.number,
-      top: VueTypes.number,
-      bottom: VueTypes.number
-    }),
-    VueTypes.string,
-    VueTypes.oneOf([false])
-  ]).def(false),
-  defaultClassName: VueTypes.string.def('vue-draggable'),
-  defaultClassNameDragging: VueTypes.string.def('vue-draggable-dragging'),
-  defaultClassNameDragged: VueTypes.string.def('vue-draggable-dragged'),
-  defaultPosition: VueTypes.shape({
-    x: VueTypes.number,
-    y: VueTypes.number
-  }).def({x: 0, y: 0}),
-  positionOffset: VueTypes.shape({
-    x: VueTypes.oneOfType([VueTypes.number, VueTypes.string]),
-    y: VueTypes.oneOfType([VueTypes.number, VueTypes.string])
-  }),
-  position: VueTypes.shape({
-    x: VueTypes.number,
-    y: VueTypes.number
-  }).def(undefined)
+  axis: {
+    type: String as PropType<Axis>,
+    default: 'both',
+  },
+  bounds: {
+    type: [Object, String, Boolean] as PropType<DraggableBounds>,
+    default: false,
+  },
+  defaultClassName: {
+    type: String,
+    default: 'vue-draggable',
+  },
+  defaultClassNameDragging: {
+    type: String,
+    default: 'vue-draggable-dragging',
+  },
+  defaultClassNameDragged: {
+    type: String,
+    default: 'vue-draggable-dragged',
+  },
+  defaultPosition: {
+    type: Object as PropType<ControlPosition>,
+    default: () => ({ x: 0, y: 0 }),
+  },
+  positionOffset: {
+    type: Object as PropType<PositionOffsetControlPosition>,
+  },
+  position: {
+    type: Object as PropType<ControlPosition>,
+    default: undefined
+  }
+  // axis: VueTypes.oneOf(['both', 'x', 'y', 'none']).def('both'),
+  // bounds: VueTypes.oneOfType([
+  //   VueTypes.shape({
+  //     left: VueTypes.number,
+  //     right: VueTypes.number,
+  //     top: VueTypes.number,
+  //     bottom: VueTypes.number
+  //   }),
+  //   VueTypes.string,
+  //   VueTypes.oneOf([false])
+  // ]).def(false),
+  // defaultClassName: VueTypes.string.def('vue-draggable'),
+  // defaultClassNameDragging: VueTypes.string.def('vue-draggable-dragging'),
+  // defaultClassNameDragged: VueTypes.string.def('vue-draggable-dragged'),
+  // defaultPosition: VueTypes.shape({
+  //   x: VueTypes.number,
+  //   y: VueTypes.number
+  // }).def({x: 0, y: 0}),
+  // positionOffset: VueTypes.shape({
+  //   x: VueTypes.oneOfType([VueTypes.number, VueTypes.string]),
+  //   y: VueTypes.oneOfType([VueTypes.number, VueTypes.string])
+  // }),
+  // position: VueTypes.shape({
+  //   x: VueTypes.number,
+  //   y: VueTypes.number
+  // }).def(undefined)
 }
 
 const componentName = 'Draggable'
@@ -94,7 +126,8 @@ const Draggable = defineComponent({
     class: dontSetMe('class', componentName),
     transform: dontSetMe('transform', componentName),
   },
-  setup(props, { slots }){
+  setup(props: DefineComponent<DraggableProps>['props'], { slots }){
+    console.log('props', props)
     const rootElement = ref(null)
     if (props.position && !(props.dragFn || props.stopFn)) {
       // eslint-disable-next-line no-console
@@ -221,8 +254,8 @@ const Draggable = defineComponent({
       const controlled = Boolean(props.position);
       if (controlled) {
         const { x, y } = props.position;
-        newState.x = x as number;
-        newState.y = y as number;
+        newState.x = x;
+        newState.y = y;
       }
 
       Object.keys(newState).forEach((key: string) => {
@@ -278,7 +311,7 @@ const Draggable = defineComponent({
       }
 
       // Mark with class while dragging
-      const className = clsx(defaultClassName, {
+      const className = clsx((defaultClassName as string), {
         [defaultClassNameDragging]: state.dragging,
         [defaultClassNameDragged]: state.dragged
       });

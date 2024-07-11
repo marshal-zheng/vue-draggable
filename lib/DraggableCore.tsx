@@ -40,9 +40,12 @@ import {
   reactive,
   onUnmounted,
   isVNode,
+  DefineComponent,
+  PropType
 } from 'vue';
-import VueTypes from 'vue-types'
-import get from 'lodash/get'
+import { get } from 'lodash'
+
+const funcVoid = function () {}
 
 import {
   matchesSelectorAndParentsTo,
@@ -53,9 +56,9 @@ import {
   removeUserSelectStyles
 } from './utils/domFns';
 import { createCoreData, getControlPosition, snapToGrid } from './utils/positionFns';
-import { propIsNotNode } from './utils/shims';
 import log from './utils/log';
-import { EventHandler, MouseTouchEvent, DraggableData, DraggableCoreDefaultProps, DraggableCoreProps } from './utils/types'
+import { EventHandler, MouseTouchEvent, DraggableData, DraggableCoreDefaultProps, DraggableCoreProps, DraggableEvent } from './utils/types'
+import { propIsNotNode } from './utils/shims'
 
 interface IState {
   dragging: boolean
@@ -81,28 +84,68 @@ const eventsFor = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const defaultDraggableEventHandler = (e: MouseEvent, data: DraggableData): void | boolean => true
-const funcVoid = function () {}
 
 // Default to mouse events.
 let dragEventFor = eventsFor.mouse;
 
-export const draggableCoreDefaultProps: DraggableCoreDefaultProps = {
-  allowAnyClick: VueTypes.bool.def(false),
-  disabled: VueTypes.bool.def(false),
-  enableUserSelectHack: VueTypes.bool.def(true),
-  startFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  dragFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  stopFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  scale: VueTypes.number.def(1),
+export const draggableCoreDefaultProps: DefineComponent<DraggableCoreDefaultProps>['props'] = {
+  // allowAnyClick: VueTypes.bool.def(false),
+  // disabled: VueTypes.bool.def(false),
+  // enableUserSelectHack: VueTypes.bool.def(true),
+  // startFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
+  // dragFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
+  // stopFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
+  // scale: VueTypes.number.def(1),
+  allowAnyClick: {
+    type: Boolean,
+    default: false,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  enableUserSelectHack: {
+    type: Boolean,
+    default: true,
+  },
+  startFn: {
+    type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
+    default: () => funcVoid,
+  },
+  dragFn: {
+    type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
+    default: () => funcVoid,
+  },
+  stopFn: {
+    type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
+    default: () => funcVoid,
+  },
+  scale: {
+    type: Number,
+    default: 1,
+  }
 }
 
-export const draggableCoreProps: DraggableCoreProps = {
+export const draggableCoreProps: DefineComponent<DraggableCoreProps>['props'] = {
   ...draggableCoreDefaultProps,
-  cancel: VueTypes.string,
-  offsetParent: VueTypes.custom(propIsNotNode, 'Draggable\'s offsetParent must be a DOM Node.'),
-  grid: VueTypes.arrayOf(VueTypes.number),
-  handle: VueTypes.string,
-  nodeRef: VueTypes.object.def(() => null)
+  cancel: {
+    type: String
+  },
+  offsetParent: {
+    type: Object as PropType<HTMLElement>,
+    default: () => document.body,
+    validator: (value: unknown): boolean => propIsNotNode(value),
+  },
+  grid: {
+    type: Array as PropType<number[]>
+  },
+  handle: {
+    type: String,
+  },
+  nodeRef: {
+    type: Object as PropType<HTMLElement | null>,
+    default: () => null,
+  },
 }
 
 const componentName = 'DraggableCore'
@@ -114,7 +157,7 @@ export default defineComponent({
   props: {
     ...draggableCoreProps,
   },
-  setup(props, { slots, emit }){
+  setup(props: DraggableCoreProps, { slots, emit }){
     const rootElement = ref(null)
     const state: IState = reactive({
       dragging: false,
@@ -125,8 +168,9 @@ export default defineComponent({
       mounted: false
     })
 
-    const findDOMNode = (): HTMLElement => {
-      return get(props, 'nodeRef.value') || rootElement.value;
+
+    const findDOMNode = (): HTMLElement | null => {
+      return props.nodeRef?.value || rootElement.value
     }
 
     const handleDrag: EventHandler<MouseTouchEvent> = e => {
@@ -146,7 +190,7 @@ export default defineComponent({
       const coreEvent = createCoreData({ props, findDOMNode, state }, x, y);
   
       log('DraggableCore: handleDrag: %j', coreEvent);
-
+      
       // Call event handler. If it returns explicit false, trigger end.
       const shouldUpdate = props.dragFn?.(e, coreEvent);
       if (shouldUpdate === false || state.mounted === false) {
@@ -219,7 +263,7 @@ export default defineComponent({
       ) return false;
   
       // Get nodes. Be sure to grab relative document (could be iframed)
-      const thisNode = findDOMNode();
+      const thisNode = findDOMNode() as HTMLElement;
       if (!get(thisNode, 'ownerDocument.body')) {
         // throw new Error('<DraggableCore> not mounted on DragStart!');
       }
