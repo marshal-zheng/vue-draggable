@@ -1,6 +1,6 @@
 {
   "name": "@marsio/vue-draggable",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Vue draggable component",
   "main": "build/cjs/cjs.js",
   "unpkg": "build/web/vue-draggable.min.js",
