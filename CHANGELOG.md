@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Chores
 
 - Remove vue-types to optimize bundles size
+- Update package.json
 
 ## [1.0.4] - (July 10, 2024)
 
