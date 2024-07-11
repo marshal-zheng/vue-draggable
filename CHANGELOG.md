@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - (July 11, 2024)
+
+### Chores
+
+- Remove vue-types to optimize bundles size
+
 ## [1.0.4] - (July 10, 2024)
 
 ### Bug Fixes
@@ -38,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+[1.0.5]: https://github.com///compare/v1.0.4..v1.0.5
 [1.0.4]: https://github.com///compare/v1.0.3..v1.0.4
 [1.0.3]: https://github.com///releases/tag/v1.0.3
 
