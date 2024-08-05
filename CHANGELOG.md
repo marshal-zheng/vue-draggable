@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - (August 05, 2024)
+
+### Chores
+
+- Add *.tgz to .gitignore
+- Update script reference to babel.min.js
+- Refactor Draggable component to improve performance and remove unused code
+- Update Draggable component typings to use Partial for props
+
 ## [1.0.5] - (July 11, 2024)
 
 ### Chores
@@ -45,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+[1.0.7]: https://github.com///compare/v1.0.6..v1.0.7
 [1.0.5]: https://github.com///compare/v1.0.4..v1.0.5
 [1.0.4]: https://github.com///compare/v1.0.3..v1.0.4
 [1.0.3]: https://github.com///releases/tag/v1.0.3
