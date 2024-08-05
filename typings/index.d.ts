@@ -26,12 +26,11 @@ declare module '@marsio/vue-draggable' {
     startFn: DraggableEventHandler,
     dragFn: DraggableEventHandler,
     stopFn: DraggableEventHandler,
-    scale: DraggableEventHandler,
+    scale: number,
     cancel: string,
     offsetParent: HTMLElement,
     grid: [number, number],
-    handle: string,
-    nodeRef?: Ref<HTMLElement | null> 
+    handle: string
   }
 
   type DraggableProps = DraggableCoreProps & {
@@ -45,8 +44,8 @@ declare module '@marsio/vue-draggable' {
     defaultPosition: PositionOffsetControlPosition
   }
   
-  const Draggable: DefineComponent<DraggableProps>;
-  const DraggableCore: DefineComponent<DraggableCoreProps>;
+  const Draggable: DefineComponent<Partial<DraggableProps>>;
+  const DraggableCore: DefineComponent<Partial<DraggableCoreProps>>;
   export { Draggable as default, DraggableCore};
 
   export {
