@@ -86,32 +86,6 @@ export const draggableProps = {
     type: Object as PropType<ControlPosition>,
     default: undefined
   }
-  // axis: VueTypes.oneOf(['both', 'x', 'y', 'none']).def('both'),
-  // bounds: VueTypes.oneOfType([
-  //   VueTypes.shape({
-  //     left: VueTypes.number,
-  //     right: VueTypes.number,
-  //     top: VueTypes.number,
-  //     bottom: VueTypes.number
-  //   }),
-  //   VueTypes.string,
-  //   VueTypes.oneOf([false])
-  // ]).def(false),
-  // defaultClassName: VueTypes.string.def('vue-draggable'),
-  // defaultClassNameDragging: VueTypes.string.def('vue-draggable-dragging'),
-  // defaultClassNameDragged: VueTypes.string.def('vue-draggable-dragged'),
-  // defaultPosition: VueTypes.shape({
-  //   x: VueTypes.number,
-  //   y: VueTypes.number
-  // }).def({x: 0, y: 0}),
-  // positionOffset: VueTypes.shape({
-  //   x: VueTypes.oneOfType([VueTypes.number, VueTypes.string]),
-  //   y: VueTypes.oneOfType([VueTypes.number, VueTypes.string])
-  // }),
-  // position: VueTypes.shape({
-  //   x: VueTypes.number,
-  //   y: VueTypes.number
-  // }).def(undefined)
 }
 
 const componentName = 'Draggable'
@@ -132,7 +106,7 @@ const Draggable = defineComponent({
     if (props.position && !(props.dragFn || props.stopFn)) {
       // eslint-disable-next-line no-console
       console.warn('A `position` was applied to this <Draggable>, without drag handlers. This will make this ' +
-        'component effectively undraggable. Please attach `onDrag` or `onStop` handlers so you can adjust the ' +
+        'component effectively undraggable. Please attach `dragFn` or `stopFn` handlers so you can adjust the ' +
         '`position` of this element.');
     }
     const state = reactive({
@@ -151,10 +125,7 @@ const Draggable = defineComponent({
       isElementSVG: false
     })
 
-    // const position = ref(props.position);
-    // const prevPropsPosition = ref(null);
-
-    const findDOMNode = (): HTMLElement => {
+    const findDOMNode = (): HTMLElement | null => {
       return get(props, 'nodeRef.value') || rootElement.value;
     }
 
@@ -182,7 +153,7 @@ const Draggable = defineComponent({
 
     const onDrag: DraggableEventHandler = (e, coreData) => {
       if (!state.dragging) return false;
-      log('Draggable: onDrag: %j', coreData);
+      log('Draggable: dragFn: %j', coreData);
   
       const uiData = createDraggableData({ props, state }, coreData);
   

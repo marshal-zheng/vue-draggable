@@ -21,7 +21,6 @@
  * - `grid` (Array[Number, Number]): Specifies a grid [x, y] to which the element's movement will be snapped.
  * - `handle` (String): CSS selector that defines the handle element that initiates drag actions. If not defined, the entire element is draggable.
  * - `nodeRef` (Object): A Vue ref object pointing to the draggable element. Used when direct DOM access is necessary.
- *
  * @setup
  * The setup function initializes the component's reactive state and event handlers for drag operations. It handles the
  * initialization and cleanup of event listeners for mouse and touch events that control the drag behavior.
@@ -145,7 +144,7 @@ export const draggableCoreProps: DefineComponent<DraggableCoreProps>['props'] = 
   nodeRef: {
     type: Object as PropType<HTMLElement | null>,
     default: () => null,
-  },
+  }
 }
 
 const componentName = 'DraggableCore'
@@ -157,6 +156,7 @@ export default defineComponent({
   props: {
     ...draggableCoreProps,
   },
+  emits: ['mousedown', 'mouseup', 'touchend'],
   setup(props: DraggableCoreProps, { slots, emit }){
     const rootElement = ref(null)
     const state: IState = reactive({
@@ -272,9 +272,9 @@ export default defineComponent({
       // Short circuit if handle or cancel prop was provided and selector doesn't match.
       if (
         props.disabled
-        || (!(e.target instanceof ownerDocument.defaultView!.Node))
-        || (props.handle && !matchesSelectorAndParentsTo(e.target, props.handle, thisNode))
-        || (props.cancel && matchesSelectorAndParentsTo(e.target, props.cancel, thisNode))) {
+        || (ownerDocument && (!(e.target instanceof ownerDocument.defaultView!.Node)))
+        || (props.handle && !matchesSelectorAndParentsTo(e.target as Node, props.handle, thisNode))
+        || (props.cancel && matchesSelectorAndParentsTo(e.target as Node, props.cancel, thisNode))) {
         return;
       }
   
@@ -322,6 +322,7 @@ export default defineComponent({
 
     const onMousedown: EventHandler<MouseTouchEvent> = e => {
       dragEventFor = eventsFor.mouse; // on touchscreen laptops we could switch back to mouse
+      emit('mousedown', e)
       return handleDragStart(e);
     };
 
@@ -372,7 +373,11 @@ export default defineComponent({
     return () => {
       const child = slots.default ? slots.default()[0] : null;
       if (!child) return null;
-      const clonedChildren = isVNode(child) ? cloneVNode(child, { onMousedown, onMouseup, onTouchend, ref: rootElement }) : child;
+      // 判断child.type是否是一个组件
+      const isComponent = typeof child.type === 'object' && 'name' in child.type;
+      // const clonedChildren = isVNode(child) ? cloneVNode(child, { onMousedown, onMouseup, onTouchend, ref: props.nodeRef || rootElement }) : child;
+      const clonedChildren = isVNode(child) ? cloneVNode(child, { onMousedown, onMouseup, onTouchend, ref: props.nodeRef || rootElement }) : child;
+      // const clonedChildren = isVNode(child) ? cloneVNode(child, {}) : child;
 
       return clonedChildren;
     };
