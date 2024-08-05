@@ -1,5 +1,6 @@
 .idea
 *.iml
+*.tgz
 node_modules/
 build/
 docs/
