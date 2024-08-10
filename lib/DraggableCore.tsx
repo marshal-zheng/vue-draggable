@@ -88,13 +88,6 @@ export const defaultDraggableEventHandler = (e: MouseEvent, data: DraggableData)
 let dragEventFor = eventsFor.mouse;
 
 export const draggableCoreDefaultProps: DefineComponent<DraggableCoreDefaultProps>['props'] = {
-  // allowAnyClick: VueTypes.bool.def(false),
-  // disabled: VueTypes.bool.def(false),
-  // enableUserSelectHack: VueTypes.bool.def(true),
-  // startFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  // dragFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  // stopFn: VueTypes.func.def(defaultDraggableEventHandler).def(funcVoid),
-  // scale: VueTypes.number.def(1),
   allowAnyClick: {
     type: Boolean,
     default: false,
@@ -132,7 +125,6 @@ export const draggableCoreProps: DefineComponent<DraggableCoreProps>['props'] = 
   },
   offsetParent: {
     type: Object as PropType<HTMLElement>,
-    default: () => document.body,
     validator: (value: unknown): boolean => propIsNotNode(value),
   },
   grid: {
