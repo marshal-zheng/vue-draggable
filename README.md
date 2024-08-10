@@ -6,7 +6,8 @@ Draggable and DraggableCore are **Vue3** components designed to make elements dr
   <img src="https://user-images.githubusercontent.com/6365230/95649276-f3a02480-0b06-11eb-8504-e0614a780ba4.gif" />
 </p>
 
-## Features
+## ✨ Features
+- **Compatibility**: Compatible with server-rendered apps, PC, and mobile devices.
 - **Drag Handlers**: Offers customizable drag handlers (`startFn`, `dragFn`, `stopFn`) that allow developers to hook into drag start, during drag, and drag stop events, providing flexibility in handling these events.
 - **Position Control**: Supports controlled (`position`) and uncontrolled (`defaultPosition`) modes for element positioning, giving developers the choice to manage the draggable element's position externally or let the component handle it internally.
 - **Axis Constraints**: Allows dragging to be constrained along a specific axis (`axis`) with options for 'x', 'y', 'both', or 'none', enabling more precise control over the draggable behavior.
@@ -15,7 +16,7 @@ Draggable and DraggableCore are **Vue3** components designed to make elements dr
 -  **Grid Snapping**: Allows the draggable element to snap to a grid (`grid` prop), facilitating alignment and precise placement during dragging.
 - **Accessibility and Interaction**: Includes props for disabling the draggable functionality (`disabled`), allowing any mouse button to initiate dragging (`allowAnyClick`), and enabling a hack to prevent text selection during drag (`enableUserSelectHack`), enhancing usability and accessibility.
 
-## Quick Start
+## 📦 Quick Start
 
 To quickly start using `@marsio/vue-draggable`, follow the steps below:
 
@@ -343,7 +344,7 @@ Drag callbacks (`startFn`, `dragFn`, `stopFn`) are called with the [same argumen
 
 ----
 
-### Modern browsers.
+### 🖥 Environment Support
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
 | --- | --- | --- | --- | --- |
