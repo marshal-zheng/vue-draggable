@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - (August 10, 2024)
+
+### Bug Fixes
+
+- To fix the "document is not defined" error
+
+### Documentation
+
+- Update README
+
 ## [1.0.7] - (August 05, 2024)
 
 ### Chores
@@ -54,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+[1.0.8]: https://github.com///compare/v1.0.7..v1.0.8
 [1.0.7]: https://github.com///compare/v1.0.6..v1.0.7
 [1.0.5]: https://github.com///compare/v1.0.4..v1.0.5
 [1.0.4]: https://github.com///compare/v1.0.3..v1.0.4
