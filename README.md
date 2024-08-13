@@ -6,6 +6,8 @@ Draggable and DraggableCore are **Vue3** components designed to make elements dr
   <img src="https://user-images.githubusercontent.com/6365230/95649276-f3a02480-0b06-11eb-8504-e0614a780ba4.gif" />
 </p>
 
+[**[Demo](http://110.41.33.162:9001/) | [Changelog](/CHANGELOG.md) | [View Example](/example/example.js)**]
+
 ## ✨ Features
 - **Compatibility**: Compatible with server-rendered apps, PC, and mobile devices.
 - **Drag Handlers**: Offers customizable drag handlers (`startFn`, `dragFn`, `stopFn`) that allow developers to hook into drag start, during drag, and drag stop events, providing flexibility in handling these events.
