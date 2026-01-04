@@ -1,8 +1,7 @@
 import { Ref } from 'vue'
 
-type DraggableEventHandler = (e: MouseEvent, data: DraggableData) => void | false
-
-type DraggableEvent = MouseEvent | TouchEvent
+type DraggableEvent = MouseEvent | TouchEvent | PointerEvent
+type DraggableEventHandler = (e: DraggableEvent, data: DraggableData) => void | false
 
 interface DraggableData {
   node: HTMLElement,
@@ -35,14 +34,31 @@ class TouchEvent2 extends TouchEvent {
 }
 
 type MouseTouchEvent = MouseEvent & TouchEvent2
+type MouseTouchPointerEvent = MouseTouchEvent | PointerEvent
+type AutoScrollContainerInput = HTMLElement | Window | string
+type AutoScrollContainerProp = AutoScrollContainerInput | AutoScrollContainerInput[] | null
 type DraggableCoreDefaultProps = {
   allowAnyClick: boolean,
   disabled: boolean,
+  allowMobileScroll: boolean,
+  autoScroll: boolean,
+  autoScrollThreshold: number,
+  autoScrollMaxSpeed: number,
+  autoScrollAxis: Axis,
+  autoScrollIncludeWindow: boolean,
+  autoScrollContainer: AutoScrollContainerProp,
+  cancelInteractiveElements: boolean,
+  enableClickSuppression: boolean,
+  clickSuppressionDuration: number,
+  dragStartThreshold: number,
+  dragStartDelay: number,
+  dragStartDelayTolerance: number,
   enableUserSelectHack: boolean,
+  useRafDrag: boolean,
   startFn: DraggableEventHandler,
   dragFn: DraggableEventHandler,
   stopFn: DraggableEventHandler,
-  scale: DraggableEventHandler
+  scale: number
 };
 
 type DraggableCoreAdditionalProps = {
@@ -58,6 +74,8 @@ type DraggableCoreProps = DraggableCoreDefaultProps & DraggableCoreAdditionalPro
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type DraggableAdditionalProps = {
   axis: Axis,
+  directionLock: boolean,
+  directionLockThreshold: number,
   bounds: Bounds,
   defaultClassName: string
   defaultClassNameDragging: string
@@ -94,6 +112,7 @@ export {
   ControlPosition,
   PositionOffsetControlPosition,
   MouseTouchEvent,
+  MouseTouchPointerEvent,
   DraggableCoreProps,
   DraggableProps,
   Kv,

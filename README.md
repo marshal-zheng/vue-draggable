@@ -204,14 +204,20 @@ type DraggableData = {
 // If set to `true`, will allow dragging on non left-button clicks.
 allowAnyClick: boolean,
 
-// Determines which axis the draggable can move. This only affects
-// flushing to the DOM. Callbacks will still include all values.
+// Determines which axis the draggable can move.
+// Disabled axis movement is ignored and callbacks will report 0 deltas.
 // Accepted values:
 // - `both` allows movement horizontally and vertically (default).
 // - `x` limits movement to horizontal axis.
 // - `y` limits movement to vertical axis.
 // - 'none' stops all movement.
 axis: string,
+
+// If true, lock to the dominant axis after the drag starts (prevents diagonal drift).
+directionLock: boolean,
+
+// Distance (px) before directionLock chooses an axis.
+directionLockThreshold: number,
 
 // Specifies movement boundaries. Accepted values:
 // - `parent` restricts movement within the node's offsetParent
@@ -227,6 +233,10 @@ bounds: {left?: number, top?: number, right?: number, bottom?: number} | string,
 // Example: '.body'
 cancel: string,
 
+// If true, prevents dragging from starting on common interactive elements
+// (inputs, buttons, links, contenteditable).
+cancelInteractiveElements: boolean,
+
 // Class names for draggable UI.
 // Default to 'vue-draggable', 'vue-draggable-dragging', and 'vue-draggable-dragged'
 defaultClassName: string,
@@ -241,6 +251,48 @@ defaultPosition: {x: number, y: number},
 
 // If true, will not call any drag handlers.
 disabled: boolean,
+
+// If true, do not preventDefault() during touch drags, allowing the page/containers to scroll.
+allowMobileScroll: boolean,
+
+// If true, auto-scroll nearest scrollable container (and window) when the pointer is near an edge.
+autoScroll: boolean,
+
+// Distance (px) from an edge to start auto-scrolling.
+autoScrollThreshold: number,
+
+// Max auto-scroll speed (px per frame).
+autoScrollMaxSpeed: number,
+
+// Auto-scroll axis.
+autoScrollAxis: 'both' | 'x' | 'y' | 'none',
+
+// If false, never auto-scroll the window.
+autoScrollIncludeWindow: boolean,
+
+// Optional: specify which container(s) to auto-scroll.
+// Supports selector string, element, 'window', or an array of those.
+autoScrollContainer: string | HTMLElement | Window | Array<string | HTMLElement | Window> | null,
+
+// Minimum distance in pixels before the drag starts.
+// Useful to prevent accidental drags on click/tap.
+dragStartThreshold: number,
+
+// Touch-only: delay (ms) before drag can start (long-press activation).
+dragStartDelay: number,
+
+// Touch-only: movement tolerance (px) allowed during dragStartDelay before cancelling the drag start.
+dragStartDelayTolerance: number,
+
+// If true, suppress the click event fired after a drag.
+enableClickSuppression: boolean,
+
+// How long (ms) to suppress the next click after drag stop.
+clickSuppressionDuration: number,
+
+// If true, coalesce drag updates to requestAnimationFrame (at most once per frame).
+// This significantly reduces work under high-frequency move events.
+useRafDrag: boolean,
 
 // Specifies the x and y that dragging should snap to.
 grid: [number, number],
@@ -290,6 +342,24 @@ scale: number
 Note that sending `class`, `style`, or `transform` as properties will error - set them on the child element
 directly.
 
+## Auto Scroll
+
+Enable auto-scroll while dragging near an edge:
+
+```vue
+<Draggable :autoScroll="true" :autoScrollThreshold="40" :autoScrollMaxSpeed="24" />
+```
+
+Scroll only a specific container (and never the window):
+
+```vue
+<Draggable :autoScroll="true" autoScrollContainer=".scroll-pane" :autoScrollIncludeWindow="false" />
+```
+
+## Pointer Events
+
+When supported, `<DraggableCore>` uses Pointer Events (with `setPointerCapture()` for more robust drags outside the element).
+For touch pointers, Pointer Events require `touch-action` to be non-`auto` (e.g. `touch-action: none`); otherwise it falls back to Touch Events.
 
 ## Controlled vs. Uncontrolled
 
@@ -326,7 +396,21 @@ on itself and thus must have callbacks attached to be useful.
   allowAnyClick: boolean,
   cancel: string,
   disabled: boolean,
+  allowMobileScroll: boolean,
+  autoScroll: boolean,
+  autoScrollThreshold: number,
+  autoScrollMaxSpeed: number,
+  autoScrollAxis: 'both' | 'x' | 'y' | 'none',
+  autoScrollIncludeWindow: boolean,
+  autoScrollContainer: string | HTMLElement | Window | Array<string | HTMLElement | Window> | null,
+  cancelInteractiveElements: boolean,
+  enableClickSuppression: boolean,
+  clickSuppressionDuration: number,
+  dragStartDelay: number,
+  dragStartDelayTolerance: number,
   enableUserSelectHack: boolean,
+  dragStartThreshold: number,
+  useRafDrag: boolean,
   offsetParent: HTMLElement,
   grid: [number, number],
   handle: string,

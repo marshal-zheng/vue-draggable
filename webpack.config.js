@@ -55,7 +55,7 @@ module.exports = (env, argv) => {
         {
           test: /\.tsx?$/,
           use: 'ts-loader',
-          exclude: /node_modules/,
+          exclude: [/node_modules/, /mcp/],
         },
         {
           test: /\.vue$/,
@@ -66,7 +66,7 @@ module.exports = (env, argv) => {
           use: {
             loader: 'babel-loader',
           },
-          exclude: /node_modules/,
+          exclude: [/node_modules/, /mcp/],
         },
       ]
     },
@@ -95,7 +95,17 @@ module.exports = (env, argv) => {
           });
         },
       },
-      new ForkTsCheckerWebpackPlugin()
+      new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          configFile: 'tsconfig.json',
+          context: __dirname,
+          build: false,
+          mode: 'write-references',
+          diagnosticOptions: {
+            syntactic: true,
+          },
+        },
+      })
     ].filter(Boolean),
     optimization: {
       minimize: isProduction,

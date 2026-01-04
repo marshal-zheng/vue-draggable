@@ -49,11 +49,11 @@ export function int (a: string): number {
  * @param {string} propsName - The name of the prop.
  * @param {string} componentName - The name of the component.
  */
-export function dontSetMe(propsName: string, componentName: string) {
+export function dontSetMe(propsName: string, _componentName: string) {
+  void _componentName;
   return {
     validator(): boolean {
       if (!propsName) {
-        console.error(`Invalid prop ${propsName} passed to ${componentName} - do not set this, set it on the child.`);
         return false;
       }
       // 如果有其他验证逻辑，可以在这里添加

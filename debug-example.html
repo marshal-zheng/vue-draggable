@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Debug Vue Draggable</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    
+    .container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #ccc;
+      margin: 20px 0;
+    }
+    
+    .drag-box {
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 3px;
+      width: 120px;
+      height: 80px;
+      padding: 10px;
+      cursor: move;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .vue-draggable {
+      cursor: move;
+    }
+    
+    .position-info {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Vue Draggable Debug</h1>
+    
+    <div class="position-info">
+      当前位置: x={{ position.x }}, y={{ position.y }}
+    </div>
+    
+    <div class="container">
+      <Draggable 
+        bounds="parent" 
+        :grid="[25, 25]"
+        :startFn="onDragStart"
+        :dragFn="onDrag"
+        :stopFn="onDragStop"
+      >
+        <div class="drag-box">Draggable</div>
+      </Draggable>
+    </div>
+    
+    <h3>测试用例：</h3>
+    
+    <!-- 基础拖拽 -->
+    <Draggable :dragFn="onDrag">
+      <div class="drag-box">基础拖拽</div>
+    </Draggable>
+    
+    <!-- 网格对齐 -->
+    <Draggable :grid="[50, 50]" :dragFn="onDrag">
+      <div class="drag-box">50x50网格</div>
+    </Draggable>
+    
+    <!-- 仅水平拖拽 -->
+    <Draggable axis="x" :dragFn="onDrag">
+      <div class="drag-box">仅水平</div>
+    </Draggable>
+  </div>
+
+  <script src="./vue-3.2.36.js"></script>
+  <script src="../build/web/vue-draggable.min.js"></script>
+  
+  <script>
+    const { createApp, ref, reactive } = Vue;
+    const { VueDraggable: Draggable } = window;
+    
+    createApp({
+      components: {
+        Draggable
+      },
+      setup() {
+        const position = reactive({ x: 0, y: 0 });
+        
+        const onDragStart = (e, data) => {
+          console.log('拖拽开始:', data);
+        };
+        
+        const onDrag = (e, data) => {
+          position.x = data.x;
+          position.y = data.y;
+          console.log('拖拽中:', data);
+        };
+        
+        const onDragStop = (e, data) => {
+          console.log('拖拽结束:', data);
+        };
+        
+        return {
+          position,
+          onDragStart,
+          onDrag,
+          onDragStop
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

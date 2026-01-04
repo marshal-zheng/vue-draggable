@@ -102,9 +102,35 @@ const App = {
   },
   template: `
     <div>
+      <Draggable bounds="parent" :grid="[25, 25]">
+        <div class="drag-box">拖拽我</div>
+      </Draggable>
       <h1>Vue Draggable</h1>
       <Draggable v-bind="state.dragHandlers">
         <div class="box">I can be dragged anywhere</div>
+      </Draggable>
+      <Draggable :dragStartThreshold="8" v-bind="state.dragHandlers">
+        <div class="box">
+          Drag threshold (8px)<br />
+          Helps prevent mis-touches
+        </div>
+      </Draggable>
+      <Draggable :dragStartDelay="250" :dragStartDelayTolerance="6" v-bind="state.dragHandlers">
+        <div class="box">
+          Long-press to drag (touch)<br />
+          Delay: 250ms
+        </div>
+      </Draggable>
+      <Draggable :cancelInteractiveElements="true" :enableClickSuppression="true" v-bind="state.dragHandlers">
+        <div class="box" :style="{display: 'flex', flexDirection: 'column', gap: '6px'}">
+          Interactive elements won't start drag
+          <input placeholder="input" />
+          <button type="button">button</button>
+          <a href="#">link</a>
+        </div>
+      </Draggable>
+      <Draggable :directionLock="true" :directionLockThreshold="100" v-bind="state.dragHandlers">
+        <div class="box">I lock to the dominant axis</div>
       </Draggable>
       <Draggable axis="x" v-bind="state.dragHandlers">
         <div class="box cursor-x">I can only be dragged horizonally (x axis)</div>
@@ -150,7 +176,7 @@ const App = {
       <Draggable :grid="[50, 50]" v-bind="state.dragHandlers">
         <div class="box">I snap to a 50 x 50 grid</div>
       </Draggable>
-      <Draggable :bounds="{top: -100, left: -100, right: 100, bottom: 100}" v-bind="dragHandlers">
+      <Draggable :bounds="{top: -100, left: -100, right: 100, bottom: 100}" v-bind="state.dragHandlers">
         <div class="box">I can only be moved 100px in any direction.</div>
       </Draggable>
       <Draggable v-bind="state.dragHandlers">
@@ -219,6 +245,25 @@ const App = {
           </div>
         </div>
       </Draggable>
+
+      <div :style="{clear: 'both'}"></div>
+      <h2>Auto Scroll</h2>
+      <div class="box auto-scroll-pane" :style="{width: '520px', height: '320px', overflow: 'auto', position: 'relative', padding: '0'}">
+        <div :style="{width: '1000px', height: '900px', position: 'relative', padding: '10px'}">
+          <Draggable
+            :autoScroll="true"
+            :autoScrollContainer="'.auto-scroll-pane'"
+            :autoScrollIncludeWindow="false"
+            :autoScrollThreshold="40"
+            :autoScrollMaxSpeed="24"
+            v-bind="state.dragHandlers"
+          >
+            <div class="box" :style="{width: '160px', height: '160px', position: 'absolute', top: '20px', left: '20px', float: 'none'}">
+              Drag me near the edges to auto-scroll.
+            </div>
+          </Draggable>
+        </div>
+      </div>
       
     </div>
   `
@@ -239,4 +284,3 @@ createApp(App).mount('#container')
   //     ])
   //   },
   // }).mount('#container')
-

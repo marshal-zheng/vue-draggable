@@ -1,13 +1,15 @@
 import { Ref } from 'vue';
 
-export type DraggableEvent = MouseEvent | TouchEvent
+export type DraggableEvent = MouseEvent | TouchEvent | PointerEvent
 
 export interface DraggableData {
   x: number;
   y: number;
   node: HTMLElement;
   deltaX: number;
+  deltaY: number;
   lastX: number;
+  lastY: number;
 }
 
 export type Axis = 'both' | 'x' | 'y' | 'none';
@@ -25,7 +27,21 @@ export interface DraggableCoreProps {
   allowAnyClick: boolean,
   cancel: string,
   disabled: boolean,
+  allowMobileScroll?: boolean,
+  autoScroll?: boolean,
+  autoScrollThreshold?: number,
+  autoScrollMaxSpeed?: number,
+  autoScrollAxis?: Axis,
+  autoScrollIncludeWindow?: boolean,
+  autoScrollContainer?: HTMLElement | Window | string | Array<HTMLElement | Window | string> | null,
+  cancelInteractiveElements?: boolean,
+  enableClickSuppression?: boolean,
+  clickSuppressionDuration?: number,
+  dragStartThreshold?: number,
+  dragStartDelay?: number,
+  dragStartDelayTolerance?: number,
   enableUserSelectHack: boolean,
+  useRafDrag?: boolean,
   offsetParent: HTMLElement,
   grid: [number, number],
   handle: string,
@@ -38,6 +54,8 @@ export interface DraggableCoreProps {
 
 export interface DraggableProps extends DraggableCoreProps {
   axis?: Axis;
+  directionLock?: boolean;
+  directionLockThreshold?: number;
   bounds?: DraggableBounds | string | false;
   defaultClassName?: string;
   defaultClassNameDragging?: string;

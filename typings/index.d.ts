@@ -1,56 +1,89 @@
 declare module '@marsio/vue-draggable' {
-  import { DefineComponent, PropType, Ref } from 'vue';
-  import { DraggableProps } from '../utils/types'
+  import type { DefineComponent, Ref } from 'vue'
 
-  interface ControlPosition {x: number, y: number}
-  interface PositionOffsetControlPosition {x: number|string, y: number|string}
-  interface DraggableBounds {
-    left?: number;
-    right?: number;
-    top?: number;
-    bottom?: number;
-  }
-  interface DraggableData {
-    node: HTMLElement,
-    x: number, y: number,
-    deltaX: number, deltaY: number,
-    lastX: number, lastY: number
+  export type Axis = 'both' | 'x' | 'y' | 'none'
+
+  export interface ControlPosition {
+    x: number
+    y: number
   }
 
-  type DraggableEvent = MouseEvent | TouchEvent
-  type DraggableEventHandler = (e: MouseEvent, data: DraggableData) => void | false
-  type DraggableCoreProps = {
-    allowAnyClick: boolean,
-    disabled: boolean,
-    enableUserSelectHack: boolean,
-    startFn: DraggableEventHandler,
-    dragFn: DraggableEventHandler,
-    stopFn: DraggableEventHandler,
-    scale: number,
-    cancel: string,
-    offsetParent: HTMLElement,
-    grid: [number, number],
-    handle: string
+  export interface PositionOffsetControlPosition {
+    x: number | string
+    y: number | string
   }
 
-  type DraggableProps = DraggableCoreProps & {
-    axis: Axis,
-    bounds: Bounds,
-    defaultClassName: string
-    defaultClassNameDragging: string
-    defaultClassNameDragged: string
-    position: ControlPosition
-    positionOffset: PositionOffsetControlPosition
-    defaultPosition: PositionOffsetControlPosition
+  export interface DraggableBounds {
+    left?: number
+    right?: number
+    top?: number
+    bottom?: number
   }
-  
-  const Draggable: DefineComponent<Partial<DraggableProps>>;
-  const DraggableCore: DefineComponent<Partial<DraggableCoreProps>>;
-  export { Draggable as default, DraggableCore};
 
-  export {
-    DraggableBounds, DraggableData, DraggableEvent,
-    DraggableCoreProps, DraggableProps, DraggableEventHandler,
-    PositionOffsetControlPosition, ControlPosition
+  export interface DraggableData {
+    node: HTMLElement
+    x: number
+    y: number
+    deltaX: number
+    deltaY: number
+    lastX: number
+    lastY: number
   }
+
+  export type DraggableEvent = MouseEvent | TouchEvent | PointerEvent
+  export type DraggableEventHandler = (e: DraggableEvent, data: DraggableData) => void | false
+
+  export interface DraggableCoreProps {
+    allowAnyClick?: boolean
+    disabled?: boolean
+    enableUserSelectHack?: boolean
+    useRafDrag?: boolean
+    scale?: number
+
+    cancel?: string
+    offsetParent?: HTMLElement
+    grid?: [number, number]
+    handle?: string
+    nodeRef?: Ref<HTMLElement | null>
+
+    allowMobileScroll?: boolean
+
+    autoScroll?: boolean
+    autoScrollThreshold?: number
+    autoScrollMaxSpeed?: number
+    autoScrollAxis?: Axis
+    autoScrollIncludeWindow?: boolean
+    autoScrollContainer?: string | HTMLElement | Window | Array<string | HTMLElement | Window> | null
+
+    cancelInteractiveElements?: boolean
+    enableClickSuppression?: boolean
+    clickSuppressionDuration?: number
+
+    dragStartThreshold?: number
+    dragStartDelay?: number
+    dragStartDelayTolerance?: number
+
+    startFn?: DraggableEventHandler
+    dragFn?: DraggableEventHandler
+    stopFn?: DraggableEventHandler
+  }
+
+  export interface DraggableProps extends DraggableCoreProps {
+    axis?: Axis
+    directionLock?: boolean
+    directionLockThreshold?: number
+    bounds?: DraggableBounds | string | false
+    defaultClassName?: string
+    defaultClassNameDragging?: string
+    defaultClassNameDragged?: string
+    defaultPosition?: ControlPosition
+    positionOffset?: PositionOffsetControlPosition
+    position?: ControlPosition
+  }
+
+  const Draggable: DefineComponent<DraggableProps>
+  const DraggableCore: DefineComponent<DraggableCoreProps>
+
+  export { DraggableCore }
+  export default Draggable
 }

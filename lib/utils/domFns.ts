@@ -5,7 +5,51 @@
 import browserPrefix, {browserPrefixToKey} from './getPrefix'
 import { findInArray, int, isFunction } from './shims'
 
-import { ControlPosition, MouseTouchEvent, PositionOffsetControlPosition, EventHandler, CompatibleElement } from './types'
+import { ControlPosition, MouseTouchEvent, MouseTouchPointerEvent, PositionOffsetControlPosition, EventHandler, CompatibleElement } from './types'
+
+const transformKey = browserPrefixToKey('transform', browserPrefix)
+
+type OffsetParentRect = { left: number; top: number }
+
+type OffsetParentRectCacheEntry = {
+  rect: OffsetParentRect | null
+  rafId: number | null
+}
+
+const zeroOffsetParentRect: OffsetParentRect = { left: 0, top: 0 }
+const offsetParentRectCache = new WeakMap<HTMLElement, OffsetParentRectCacheEntry>()
+
+const getOffsetParentRect = (offsetParent: HTMLElement): OffsetParentRect => {
+  const ownerDocument = offsetParent.ownerDocument
+  if (offsetParent === ownerDocument.body) return zeroOffsetParentRect
+
+  let entry = offsetParentRectCache.get(offsetParent)
+  if (!entry) {
+    entry = { rect: null, rafId: null }
+    offsetParentRectCache.set(offsetParent, entry)
+  }
+
+  const cached = entry.rect
+  if (cached) return cached
+
+  const rect = offsetParent.getBoundingClientRect()
+  const nextRect: OffsetParentRect = { left: rect.left, top: rect.top }
+  entry.rect = nextRect
+
+  if (entry.rafId == null) {
+    const ownerWindow = ownerDocument.defaultView
+    if (ownerWindow?.requestAnimationFrame) {
+      entry.rafId = ownerWindow.requestAnimationFrame(() => {
+        entry.rect = null
+        entry.rafId = null
+      })
+    } else {
+      entry.rect = null
+    }
+  }
+
+  return nextRect
+}
 
 /**
  * Cached method name for matchesSelector.
@@ -64,7 +108,7 @@ export const matchesSelectorAndParentsTo = (el: Node, selector: string, baseNode
  * @param handler - The function to call when the event occurs.
  * @param inputOptions - Optional parameters for the event listener.
  */
-export const addEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchEvent>, inputOptions?: AddEventListenerOptions): void => {
+export const addEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchPointerEvent>, inputOptions?: AddEventListenerOptions): void => {
   if (!el) return
   const options = {capture: true, ...inputOptions}
   if (el.addEventListener) {
@@ -84,7 +128,7 @@ export const addEvent = (el: CompatibleElement, event: string, handler: EventHan
  * @param handler - The function that was called when the event occurred.
  * @param inputOptions - Optional parameters for the event listener.
  */
-export const removeEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchEvent>, inputOptions?: AddEventListenerOptions): void => {
+export const removeEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchPointerEvent>, inputOptions?: AddEventListenerOptions): void => {
   if (!el) return
   const options = {capture: true, ...inputOptions}
   if (el.removeEventListener) {
@@ -161,8 +205,7 @@ export const innerWidth = (node: HTMLElement): number => {
  * @returns The X and Y offset from the parent element.
  */
 export const offsetXYFromParent = (evt: {clientX: number, clientY: number}, offsetParent: HTMLElement, scale: number): ControlPosition => {
-  const isBody = offsetParent === offsetParent.ownerDocument.body
-  const offsetParentRect = isBody ? {left: 0, top: 0} : offsetParent.getBoundingClientRect()
+  const offsetParentRect = getOffsetParentRect(offsetParent)
 
   const x = (evt.clientX + offsetParent.scrollLeft - offsetParentRect.left) / scale
   const y = (evt.clientY + offsetParent.scrollTop - offsetParentRect.top) / scale
@@ -197,7 +240,7 @@ export const getTranslation = ({x, y}: ControlPosition, positionOffset: Position
  */
 export const createCSSTransform = (controlPos: ControlPosition, positionOffset: PositionOffsetControlPosition): unknown => {
   const translation = getTranslation(controlPos, positionOffset, 'px')
-  return {[browserPrefixToKey('transform', browserPrefix)]: translation }
+  return {[transformKey]: translation }
 }
 
 /**
@@ -292,13 +335,9 @@ export const addUserSelectStyles = (doc?: Document) => {
  */
 export const removeUserSelectStyles = (doc?: Document) => {
   if (!doc) return
-  try {
-    if (doc.body) removeClassName(doc.body, 'vue-draggable-transparent-selection');
-    const selection = doc.getSelection();
-    if (selection && selection.type !== 'Caret') {
-      selection.removeAllRanges();
-    }
-  } catch (e) {
-    console.error(e)
+  if (doc.body) removeClassName(doc.body, 'vue-draggable-transparent-selection');
+  const selection = doc.getSelection?.();
+  if (selection && selection.type !== 'Caret') {
+    selection.removeAllRanges();
   }
 }
