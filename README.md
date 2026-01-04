@@ -6,7 +6,7 @@ Draggable and DraggableCore are **Vue3** components designed to make elements dr
   <img src="https://user-images.githubusercontent.com/6365230/95649276-f3a02480-0b06-11eb-8504-e0614a780ba4.gif" />
 </p>
 
-[**[Demo](https://marsio.top/vue-draggable/) | [Changelog](/CHANGELOG.md) | [View Example](/example/example.js)**]
+[**[Demo](https://marsio.top/vue-draggable/) | [Changelog](/CHANGELOG.md) | [View Example](/example/example.js) | [MCP Server](./mcp/README.md)**]
 
 ## ✨ Features
 - **Compatibility**: Compatible with server-rendered apps, PC, and mobile devices.
@@ -17,7 +17,62 @@ Draggable and DraggableCore are **Vue3** components designed to make elements dr
 - **Position Offset**: Supports an offset for the draggable position (`positionOffset`), enabling adjustments to the element's position without altering its actual position properties.
 -  **Grid Snapping**: Allows the draggable element to snap to a grid (`grid` prop), facilitating alignment and precise placement during dragging.
 - **Accessibility and Interaction**: Includes props for disabling the draggable functionality (`disabled`), allowing any mouse button to initiate dragging (`allowAnyClick`), and enabling a hack to prevent text selection during drag (`enableUserSelectHack`), enhancing usability and accessibility.
+## 🤖 AI IDE Integration (MCP Server)
 
+**Supercharge your AI-powered development workflow!** Vue-Draggable now includes an official **Model Context Protocol (MCP) Server** that provides your AI assistant with comprehensive, real-time access to all component APIs, props, and examples.
+
+### ✨ What is MCP?
+
+The Model Context Protocol enables AI assistants like Claude Desktop, Cursor, and other AI IDEs to access live, accurate documentation and code examples directly from the source. No more outdated docs or hallucinated APIs!
+
+### 🚀 Key Benefits
+
+- **🎯 Accurate API Usage**: AI gets real-time access to all props, types, and default values
+- **📚 Contextual Examples**: Intelligent code suggestions based on actual component usage
+- **🔄 Always Up-to-Date**: Documentation syncs automatically with code changes
+- **⚡ Enhanced Productivity**: Write draggable components faster with AI assistance
+
+### 📋 Quick Setup
+
+#### For Cursor IDE:
+```json
+{
+  "mcpServers": {
+    "vue-draggable": {
+      "command": "npx",
+      "args": ["@marsio/vue-draggable-mcp"]
+    }
+  }
+}
+```
+
+#### For Claude Desktop:
+Add to your Claude Desktop configuration:
+```json
+{
+  "mcpServers": {
+    "vue-draggable": {
+      "command": "npx", 
+      "args": ["@marsio/vue-draggable-mcp"]
+    }
+  }
+}
+```
+
+### 🛠️ Available Tools
+
+- **`get_vue_draggable_docs`**: Complete documentation in Markdown format
+- **`list_vue_draggable_props`**: Structured props information with types and defaults  
+- **`get_vue_draggable_type`**: Specific type definitions and interfaces
+
+### 💡 Example AI Prompts
+
+After setup, try asking your AI assistant:
+- *"Create a draggable card component with grid snapping"*
+- *"Show me all available props for Draggable component"*
+- *"How do I constrain dragging to horizontal axis only?"*
+
+[Learn more about MCP setup →](./mcp/README.md)
 ## 📦 Quick Start
 
 To quickly start using `@marsio/vue-draggable`, follow the steps below:
@@ -98,6 +153,7 @@ A simple component for making elements draggable.
 #### Technical Documentation
 
 - [Installing](#installing)
+- [AI IDE Integration (MCP)](#🤖-ai-ide-integration-mcp-server)
 - [Exports](#exports)
 - [Draggable](#draggable)
 - [Draggable Usage](#draggable-usage)

@@ -1,0 +1,53 @@
+{
+    "name": "@marsio/vue-draggable-mcp",
+    "description": "MCP server for @marsio/vue-draggable - provides API docs and examples for AI IDEs",
+    "version": "1.0.1",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "sideEffects": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "homepage": "https://github.com/nicepkg/vue-draggable",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nicepkg/vue-draggable",
+        "directory": "mcp"
+    },
+    "scripts": {
+        "build": "yarn generate:props && tsup",
+        "dev": "yarn generate:props && tsup --watch",
+        "clean": "rimraf dist",
+        "generate:props": "node ./scripts/generate-props.js",
+        "check:data": "node ./scripts/check-data.js",
+        "test:mcp": "echo '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | node dist/index.js",
+        "prepublishOnly": "yarn build && yarn check:data"
+    },
+    "bin": {
+        "vue-draggable-mcp": "./dist/index.js"
+    },
+    "keywords": [
+        "vue-draggable",
+        "mcp-server",
+        "mcp",
+        "vue3",
+        "draggable",
+        "ai"
+    ],
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.22.0",
+        "zod": "^4.3.4"
+    },
+    "devDependencies": {
+        "@types/node": "^22.9.0",
+        "rimraf": "^4.4.1",
+        "tsup": "^8.5.1",
+        "typescript": "~5.5.4"
+    }
+}
