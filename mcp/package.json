@@ -12,10 +12,10 @@
     "publishConfig": {
         "access": "public"
     },
-    "homepage": "https://github.com/nicepkg/vue-draggable",
+    "homepage": "https://github.com/marshal-zheng/vue-draggable",
     "repository": {
         "type": "git",
-        "url": "https://github.com/nicepkg/vue-draggable",
+        "url": "https://github.com/marshal-zheng/vue-draggable",
         "directory": "mcp"
     },
     "scripts": {
