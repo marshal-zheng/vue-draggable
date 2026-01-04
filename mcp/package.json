@@ -1,7 +1,7 @@
 {
     "name": "@marsio/vue-draggable-mcp",
     "description": "MCP server for @marsio/vue-draggable - provides API docs and examples for AI IDEs",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
