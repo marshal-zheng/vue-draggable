@@ -17,6 +17,7 @@ export type VueDraggableProp = {
   required: boolean | null
   validator: string | null
   source: { file: string }
+  description: string
 }
 
 export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
@@ -34,6 +35,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Allows drag with any mouse button",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -52,6 +54,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Disables dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -70,6 +73,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Allows mobile scrolling (touch events won't prevent default)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -88,6 +92,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Enables auto-scrolling at edges",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -106,6 +111,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Distance from edge to trigger auto-scroll (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -124,6 +130,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Maximum auto-scroll speed",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -142,6 +149,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String as PropType<Axis>",
+    "description": "Auto-scroll direction",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -160,6 +168,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Whether auto-scroll includes window",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -180,6 +189,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "[Object, String, Array] as PropType<AutoScrollContainerProp>",
+    "description": "Auto-scroll container",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -198,6 +208,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Disable dragging on interactive elements (input, textarea, etc.)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -216,6 +227,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Suppress click events after dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -234,6 +246,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Click suppression duration (ms)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -252,6 +265,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Minimum drag distance to trigger drag (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -270,6 +284,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Delay before drag starts (ms)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -288,6 +303,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Tolerance for movement during drag delay (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -306,6 +322,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Enable hack to prevent text selection",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -324,6 +341,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Use requestAnimationFrame for performance optimization",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -342,6 +360,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag start callback. Return false to cancel.",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -360,6 +379,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag move callback. Return false to cancel.",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -378,6 +398,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag stop callback",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -396,6 +417,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Scale factor (for internal scaling)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -414,6 +436,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Selector to prevent dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -432,6 +455,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": "(value: unknown): boolean => propIsNotNode(value)",
     "sourceType": "Object as PropType<HTMLElement>",
+    "description": "Offset parent element",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -450,6 +474,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Array as PropType<number[]>",
+    "description": "Grid for snapping, e.g. [25, 25]",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -468,6 +493,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Selector for drag handle",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -486,6 +512,7 @@ export const DRAGGABLE_CORE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Object as PropType<HTMLElement | null>",
+    "description": "Node reference",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -508,6 +535,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Allows drag with any mouse button",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -527,6 +555,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Disables dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -546,6 +575,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Allows mobile scrolling (touch events won't prevent default)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -565,6 +595,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Enables auto-scrolling at edges",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -584,6 +615,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Distance from edge to trigger auto-scroll (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -603,6 +635,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Maximum auto-scroll speed",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -622,6 +655,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String as PropType<Axis>",
+    "description": "Auto-scroll direction",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -641,6 +675,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Whether auto-scroll includes window",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -662,6 +697,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "[Object, String, Array] as PropType<AutoScrollContainerProp>",
+    "description": "Auto-scroll container",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -681,6 +717,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Disable dragging on interactive elements (input, textarea, etc.)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -700,6 +737,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Suppress click events after dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -719,6 +757,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Click suppression duration (ms)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -738,6 +777,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Minimum drag distance to trigger drag (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -757,6 +797,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Delay before drag starts (ms)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -776,6 +817,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Tolerance for movement during drag delay (pixels)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -795,6 +837,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Enable hack to prevent text selection",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -814,6 +857,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Use requestAnimationFrame for performance optimization",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -833,6 +877,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag start callback. Return false to cancel.",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -852,6 +897,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag move callback. Return false to cancel.",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -871,6 +917,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>",
+    "description": "Drag stop callback",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -890,6 +937,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Scale factor (for internal scaling)",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -909,6 +957,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Selector to prevent dragging",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -928,6 +977,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": "(value: unknown): boolean => propIsNotNode(value)",
     "sourceType": "Object as PropType<HTMLElement>",
+    "description": "Offset parent element",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -947,6 +997,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Array as PropType<number[]>",
+    "description": "Grid for snapping, e.g. [25, 25]",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -966,6 +1017,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Selector for drag handle",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -985,6 +1037,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Object as PropType<HTMLElement | null>",
+    "description": "Node reference",
     "source": {
       "file": "lib/DraggableCore.tsx"
     }
@@ -1004,6 +1057,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String as PropType<Axis>",
+    "description": "Restricts drag direction ('x', 'y', or 'both')",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1023,6 +1077,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Boolean",
+    "description": "Locks drag to the direction of the first movement",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1042,6 +1097,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Number",
+    "description": "Threshold in pixels for direction locking",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1063,6 +1119,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "[Object, String, Boolean] as PropType<DraggableBounds>",
+    "description": "Drag bounds. Can be a selector, 'parent', object, or false",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1082,6 +1139,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Default class name",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1101,6 +1159,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Class name while dragging",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1120,6 +1179,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "String",
+    "description": "Class name after drag stops",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1139,6 +1199,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Object as PropType<ControlPosition>",
+    "description": "Initial position (only used at initialization)",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1158,6 +1219,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Object as PropType<PositionOffsetControlPosition>",
+    "description": "Position offset",
     "source": {
       "file": "lib/Draggable.tsx"
     }
@@ -1177,6 +1239,7 @@ export const DRAGGABLE_PROPS: VueDraggableProp[] = [
     "required": null,
     "validator": null,
     "sourceType": "Object as PropType<ControlPosition>",
+    "description": "Controlled position. Must be updated via dragFn when set",
     "source": {
       "file": "lib/Draggable.tsx"
     }

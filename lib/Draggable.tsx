@@ -48,9 +48,9 @@ import {
   DefineComponent
 } from 'vue'
 import clsx from 'clsx';
-import {createCSSTransform, createSVGTransform} from './utils/domFns';
-import {canDragX, canDragY, getBoundPosition} from './utils/positionFns';
-import {dontSetMe} from './utils/shims';
+import { createCSSTransform, createSVGTransform, setTransform, getTranslation } from './utils/domFns';
+import { canDragX, canDragY, getBoundPosition } from './utils/positionFns';
+import { dontSetMe } from './utils/shims';
 import DraggableCore from './DraggableCore';
 import log from './utils/log';
 import noop from './utils/noop';
@@ -59,41 +59,51 @@ import { draggableCoreProps } from './DraggableCore';
 
 export const draggableProps = {
   ...draggableCoreProps,
+  /** Restricts drag direction ('x', 'y', or 'both') */
   axis: {
     type: String as PropType<Axis>,
     default: 'both',
   },
+  /** Locks drag to the direction of the first movement */
   directionLock: {
     type: Boolean,
     default: false,
   },
+  /** Threshold in pixels for direction locking */
   directionLockThreshold: {
     type: Number,
     default: 4,
   },
+  /** Drag bounds. Can be a selector, 'parent', object, or false */
   bounds: {
     type: [Object, String, Boolean] as PropType<DraggableBounds>,
     default: false,
   },
+  /** Default class name */
   defaultClassName: {
     type: String,
     default: 'vue-draggable',
   },
+  /** Class name while dragging */
   defaultClassNameDragging: {
     type: String,
     default: 'vue-draggable-dragging',
   },
+  /** Class name after drag stops */
   defaultClassNameDragged: {
     type: String,
     default: 'vue-draggable-dragged',
   },
+  /** Initial position (only used at initialization) */
   defaultPosition: {
     type: Object as PropType<ControlPosition>,
     default: () => ({ x: 0, y: 0 }),
   },
+  /** Position offset */
   positionOffset: {
     type: Object as PropType<PositionOffsetControlPosition>,
   },
+  /** Controlled position. Must be updated via dragFn when set */
   position: {
     type: Object as PropType<ControlPosition>,
     default: undefined
@@ -112,7 +122,7 @@ const Draggable = defineComponent({
     class: dontSetMe('class', componentName),
     transform: dontSetMe('transform', componentName),
   },
-  setup(props: DefineComponent<DraggableProps>['props'], { slots }){
+  setup(props: DefineComponent<DraggableProps>['props'], { slots }) {
     const localNodeRef = ref<HTMLElement | null>(null)
     const state = reactive<{
       dragging: boolean
@@ -136,6 +146,10 @@ const Draggable = defineComponent({
       // Can only determine if SVG after mounting
       isElementSVG: false
     })
+
+    const internalState = {
+      isUnmounted: false
+    }
 
     const isElementNode = (v: unknown): v is HTMLElement => {
       return !!v && typeof v === 'object' && 'nodeType' in (v as Record<string, unknown>) && (v as Node).nodeType === 1
@@ -231,22 +245,23 @@ const Draggable = defineComponent({
     }
 
     onMounted(() => {
-      if(typeof window.SVGElement !== 'undefined' && findDOMNode() instanceof window.SVGElement) {
+      if (typeof window.SVGElement !== 'undefined' && findDOMNode() instanceof window.SVGElement) {
         state.isElementSVG = true
       }
     })
 
     onUnmounted(() => {
       state.dragging = false
+      internalState.isUnmounted = true
       if (rafId != null) {
         window.cancelAnimationFrame(rafId)
         rafId = null
       }
     })
-  
+
     const onDragStart: DraggableEventHandler = (e, coreData) => {
       log('Draggable: onDragStart: %j', coreData);
-  
+
       // Short-circuit if user's callback killed it.
       const isControlled = Boolean(props.position)
       if (isControlled) {
@@ -293,7 +308,7 @@ const Draggable = defineComponent({
     const onDrag: DraggableEventHandler = (e, coreData) => {
       if (!state.dragging) return false;
       log('Draggable: dragFn: %j', coreData);
-  
+
       const scale = typeof props.scale === 'number' ? props.scale : 1
       const rawDeltaX = (coreData.deltaX / scale)
       const rawDeltaY = (coreData.deltaY / scale)
@@ -340,29 +355,29 @@ const Draggable = defineComponent({
         newY = internalY
         uiDeltaY = 0
       }
-  
+
       // Keep within bounds.
       if (props.bounds) {
         // Save original x and y.
         const x = newX;
         const y = newY;
-  
+
         // Add slack to the values used to calculate bound position. This will ensure that if
         // completely removed.
         const slackX = effectiveAxisX ? internalSlackX : 0
         const slackY = effectiveAxisY ? internalSlackY : 0
         newX += slackX;
         newY += slackY;
-  
+
         // Get bound position. This will ceil/floor the x and y within the boundaries.
         const [boundX, boundY] = getBoundPosition(boundsContext, newX, newY);
         newX = boundX;
         newY = boundY;
-  
+
         // Recalculate slack by noting how much was shaved by the boundPosition handler.
         newSlackX = slackX + (x - newX);
         newSlackY = slackY + (y - newY);
-  
+
         // Update the event we fire to reflect what really happened after bounds took effect.
         uiDeltaX = newX - internalX;
         uiDeltaY = newY - internalY;
@@ -370,7 +385,7 @@ const Draggable = defineComponent({
 
       if (!effectiveAxisX) newSlackX = 0
       if (!effectiveAxisY) newSlackY = 0
-  
+
       // Short-circuit if user's callback killed it.
       if (props.dragFn !== noop) {
         const uiData = {
@@ -390,20 +405,57 @@ const Draggable = defineComponent({
       internalY = newY
       internalSlackX = newSlackX
       internalSlackY = newSlackY
-      if (props.useRafDrag) {
-        if (rafId != null) {
-          window.cancelAnimationFrame(rafId)
-          rafId = null
+
+      // PERF: If we are not controlled, we can just move the element directly.
+      // This allows us to run at 60fps without the overhead of Vue's reactivity system.
+      if (!props.position) {
+        const transformOpts = {
+          x: canDragX({ props }) ? internalX : props.defaultPosition.x,
+          y: canDragY({ props }) ? internalY : props.defaultPosition.y
         }
-        flushToReactiveState()
-      } else {
-        scheduleFlush()
+
+        const positionOffset: PositionOffsetControlPosition = props.positionOffset;
+        const unit = 'px';
+        const isSVG = state.isElementSVG;
+
+        const translation = getTranslation(transformOpts, positionOffset, unit)
+        const domNode = findDOMNode()
+
+        if (domNode) {
+          if (isSVG) {
+            // SVG logic usually requires attribute setting, but for performance we might try CSS if possible, 
+            // or just fallback to reactivity. 
+            // However, the original code used `createSVGTransform` which returns a string for `transform` attribute?
+            // Wait, existing code uses `transform` prop on VNode for SVG.
+            // Direct DOM manipulation on SVG attributes is also possible.
+            // For now, let's keep SVG on the react path or try direct setAttribute if simple.
+            // But let's stick to HTMLElement for the 'style' path for now to be safe.
+            if (!isSVG) setTransform(domNode, translation)
+          } else {
+            setTransform(domNode, translation)
+          }
+        }
+      }
+
+      // If controlled, or if using RafDrag, or if SVG (for safety), we flush.
+      // Actually, if controlled, we MUST flush to let parent update.
+      // If uncontrolled and HTML, we skip flush until stop!
+      if (props.position || props.useRafDrag || state.isElementSVG) {
+        if (props.useRafDrag) {
+          if (rafId != null) {
+            window.cancelAnimationFrame(rafId)
+            rafId = null
+          }
+          flushToReactiveState()
+        } else {
+          scheduleFlush()
+        }
       }
     };
 
     const onDragStop: DraggableEventHandler = (e, coreData) => {
       if (!state.dragging) return false;
-  
+
       // Short-circuit if user's callback killed it.
       if (props.stopFn !== noop) {
         const scale = typeof props.scale === 'number' ? props.scale : 1
@@ -425,22 +477,22 @@ const Draggable = defineComponent({
         const shouldContinue = props.stopFn?.(e, uiStop);
         if (shouldContinue === false) return false;
       }
-  
+
       log('Draggable: onDragStop: %j', coreData);
-  
+
       resetDirectionLock()
       const newState: {
         dragging: boolean,
         slackX: number,
         slackY: number,
         x?: number,
-        y?: number 
+        y?: number
       } = {
         dragging: false,
         slackX: 0,
         slackY: 0,
       };
-  
+
       // If this is a controlled component, the result of this operation will be to
       // revert back to the old position. We expect a handler on `onDragStop`, at the least.
       const controlled = Boolean(props.position);
@@ -460,6 +512,8 @@ const Draggable = defineComponent({
         window.cancelAnimationFrame(rafId)
         rafId = null
       }
+
+      // Always flush at the end to ensure state sync
       flushToReactiveState()
     };
 
@@ -526,13 +580,13 @@ const Draggable = defineComponent({
       const transformOpts = {
         // Set left if horizontal drag is enabled
         x: (canDragX({ props }) && draggable ?
-        state.x :
-        validPosition.x) ?? 0,
-  
+          state.x :
+          validPosition.x) ?? 0,
+
         // Set top if vertical drag is enabled
         y: (canDragY({ props }) && draggable ?
-        state.y :
-        validPosition.y) ?? 0
+          state.y :
+          validPosition.y) ?? 0
       };
 
       // If this element was SVG, we use the `transform` attribute.
@@ -544,6 +598,12 @@ const Draggable = defineComponent({
         // If the item you are dragging already has a transform set, wrap it in a <span> so <Draggable>
         // has a clean slate.
         style = createCSSTransform(transformOpts, positionOffset as PositionOffsetControlPosition);
+      }
+
+      // Performance adjustment:
+      if (state.dragging && !state.isElementSVG) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (style as any).willChange = 'transform'
       }
 
       // Mark with class while dragging
@@ -563,7 +623,7 @@ const Draggable = defineComponent({
 
       const coreProps = { ...draggableCoreProps, startFn: onDragStart, dragFn: onDrag, stopFn: onDragStop }
       return (
-        <DraggableCore { ...coreProps } nodeRef={(props.nodeRef as unknown) || localNodeRef}>
+        <DraggableCore {...coreProps} nodeRef={(props.nodeRef as unknown) || localNodeRef}>
           {{ default: () => clonedChildren }}
         </DraggableCore>
       );

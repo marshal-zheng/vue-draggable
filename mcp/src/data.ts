@@ -5,16 +5,11 @@
  * - lib/Draggable.tsx (draggableProps)
  * - lib/DraggableCore.tsx (draggableCoreProps)
  *
- * 文档中的 props 表格由 `src/props.generated.ts` + `src/propDescriptions.ts` 生成，避免手动同步类型/默认值。
+ * 文档中的 props 表格由 `src/props.generated.ts` 生成，避免手动同步类型/默认值。
  */
 
 import type { VueDraggableProp } from './props.generated.js'
 import { DRAGGABLE_CORE_PROPS, DRAGGABLE_PROPS } from './props.generated.js'
-import {
-  DRAGGABLE_CORE_PROP_DESCRIPTIONS,
-  DRAGGABLE_SPECIFIC_PROP_DESCRIPTIONS,
-  EVENT_CALLBACK_DESCRIPTIONS,
-} from './propDescriptions.js'
 
 const EVENT_CALLBACK_NAMES = ['startFn', 'dragFn', 'stopFn'] as const
 const EVENT_CALLBACK_SET = new Set<string>(EVENT_CALLBACK_NAMES)
@@ -70,11 +65,11 @@ function sortByPreferredOrder<T extends { name: string }>(items: T[], preferredO
 
 function buildPropsTable(
   props: VueDraggableProp[],
-  descriptionMap: Record<string, string>,
+  _ignoredDescriptionMap: Record<string, string>,
   preferredOrder: string[]
 ): string {
   const rows = sortByPreferredOrder(props, preferredOrder).map((p) => {
-    const desc = descriptionMap[p.name] ?? ''
+    const desc = p.description || ''
     return `| \`${p.name}\` | ${formatType(p)} | ${formatDefault(p)} | ${escapeTableCell(desc)} |`
   })
 
@@ -86,7 +81,7 @@ function buildEventCallbackTable(preferredOrder: ReadonlyArray<string>): string 
     DRAGGABLE_CORE_PROPS.filter((p) => EVENT_CALLBACK_SET.has(p.name)),
     [...preferredOrder]
   ).map((p) => {
-    const desc = EVENT_CALLBACK_DESCRIPTIONS[p.name as keyof typeof EVENT_CALLBACK_DESCRIPTIONS] ?? ''
+    const desc = p.description || ''
     return `| \`${p.name}\` | ${formatType(p)} | ${escapeTableCell(desc)} |`
   })
 
@@ -134,13 +129,13 @@ const PREFERRED_CORE_ORDER = [
 
 const draggableSpecificPropsTable = buildPropsTable(
   draggableSpecificProps,
-  DRAGGABLE_SPECIFIC_PROP_DESCRIPTIONS,
+  {},
   PREFERRED_DRAGGABLE_SPECIFIC_ORDER
 )
 
 const draggableCorePropsTable = buildPropsTable(
   DRAGGABLE_CORE_PROPS.filter((p) => !EVENT_CALLBACK_SET.has(p.name)),
-  DRAGGABLE_CORE_PROP_DESCRIPTIONS,
+  {},
   PREFERRED_CORE_ORDER
 )
 

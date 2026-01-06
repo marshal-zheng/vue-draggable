@@ -67,23 +67,9 @@ function printSetDiff(label, expected, actual) {
 }
 
 try {
-  // 1) 描述映射必须覆盖全部 props（避免新增 props 漏写说明）
-  const coreDescKeys = new Set(extractKeys(path.join(root, 'src/propDescriptions.ts'), 'DRAGGABLE_CORE_PROP_DESCRIPTIONS'))
-  const draggableSpecificDescKeys = new Set(
-    extractKeys(path.join(root, 'src/propDescriptions.ts'), 'DRAGGABLE_SPECIFIC_PROP_DESCRIPTIONS')
-  )
-  const eventCallbackDescKeys = new Set(extractKeys(path.join(root, 'src/propDescriptions.ts'), 'EVENT_CALLBACK_DESCRIPTIONS'))
+  // 1) 描述映射必须覆盖全部 props
+  // 改为校验生成的 props.generated.ts 中 description 字段是否非空
 
-  // Draggable：仅校验「专有 props」描述覆盖差集（避免要求重复列出所有继承 props）
-  const draggableSpecificKeys = new Set([...draggableKeys].filter((k) => !coreKeys.has(k)))
-  if (!printSetDiff('Draggable 专有 props 描述', draggableSpecificKeys, draggableSpecificDescKeys)) ok = false
-
-  // DraggableCore：描述 + 事件回调描述 必须覆盖全部 coreKeys
-  const documentedCoreKeys = new Set([...coreDescKeys, ...eventCallbackDescKeys])
-  if (!printSetDiff('DraggableCore props 描述', coreKeys, documentedCoreKeys)) ok = false
-
-  const expectedEventCallbacks = new Set(['startFn', 'dragFn', 'stopFn'])
-  if (!printSetDiff('事件回调描述', expectedEventCallbacks, eventCallbackDescKeys)) ok = false
 
   // 2) 生成的 props 数据必须与源码一致
   const generatedPath = path.join(root, 'src/props.generated.ts')
@@ -149,6 +135,18 @@ try {
 
   if (!printSetDiff('props.generated.ts DraggableCore', coreKeys, coreGeneratedKeys)) ok = false
   if (!printSetDiff('props.generated.ts Draggable', draggableKeys, draggableGeneratedKeys)) ok = false
+
+  // 校验 description 非空
+  const checkDescriptions = (props, label) => {
+    const missing = props.filter(p => !p.description).map(p => p.name)
+    if (missing.length) {
+      console.error(`❌ ${label} 缺少说明: ${missing.join(', ')}`)
+      ok = false
+    }
+  }
+
+  checkDescriptions(coreGenerated, 'DraggableCore')
+  checkDescriptions(draggableGenerated, 'Draggable')
 } catch (error) {
   ok = false
   console.error('❌ 校验失败:', error)

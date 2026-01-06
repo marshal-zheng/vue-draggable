@@ -99,86 +99,107 @@ const eventsFor = {
 export const defaultDraggableEventHandler = (e: MouseEvent, data: DraggableData): void | boolean => true
 
 export const draggableCoreDefaultProps: DefineComponent<DraggableCoreDefaultProps>['props'] = {
+  /** Allows drag with any mouse button */
   allowAnyClick: {
     type: Boolean,
     default: false,
   },
+  /** Disables dragging */
   disabled: {
     type: Boolean,
     default: false,
   },
+  /** Allows mobile scrolling (touch events won't prevent default) */
   allowMobileScroll: {
     type: Boolean,
     default: false,
   },
+  /** Enables auto-scrolling at edges */
   autoScroll: {
     type: Boolean,
     default: false,
   },
+  /** Distance from edge to trigger auto-scroll (pixels) */
   autoScrollThreshold: {
     type: Number,
     default: 30,
   },
+  /** Maximum auto-scroll speed */
   autoScrollMaxSpeed: {
     type: Number,
     default: 20,
   },
+  /** Auto-scroll direction */
   autoScrollAxis: {
     type: String as PropType<Axis>,
     default: 'both',
   },
+  /** Whether auto-scroll includes window */
   autoScrollIncludeWindow: {
     type: Boolean,
     default: true,
   },
+  /** Auto-scroll container */
   autoScrollContainer: {
     type: [Object, String, Array] as PropType<AutoScrollContainerProp>,
     default: null,
   },
+  /** Disable dragging on interactive elements (input, textarea, etc.) */
   cancelInteractiveElements: {
     type: Boolean,
     default: false,
   },
+  /** Suppress click events after dragging */
   enableClickSuppression: {
     type: Boolean,
     default: false,
   },
+  /** Click suppression duration (ms) */
   clickSuppressionDuration: {
     type: Number,
     default: 250,
   },
+  /** Minimum drag distance to trigger drag (pixels) */
   dragStartThreshold: {
     type: Number,
     default: 0,
   },
+  /** Delay before drag starts (ms) */
   dragStartDelay: {
     type: Number,
     default: 0,
   },
+  /** Tolerance for movement during drag delay (pixels) */
   dragStartDelayTolerance: {
     type: Number,
     default: 5,
   },
+  /** Enable hack to prevent text selection */
   enableUserSelectHack: {
     type: Boolean,
     default: true,
   },
+  /** Use requestAnimationFrame for performance optimization */
   useRafDrag: {
     type: Boolean,
     default: false,
   },
+  /** Drag start callback. Return false to cancel. */
   startFn: {
     type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
     default: noop,
   },
+  /** Drag move callback. Return false to cancel. */
   dragFn: {
     type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
     default: noop,
   },
+  /** Drag stop callback */
   stopFn: {
     type: Function as PropType<(e: DraggableEvent, data: DraggableData) => void | false>,
     default: noop,
   },
+  /** Scale factor (for internal scaling) */
   scale: {
     type: Number,
     default: 1,
@@ -187,19 +208,24 @@ export const draggableCoreDefaultProps: DefineComponent<DraggableCoreDefaultProp
 
 export const draggableCoreProps: DefineComponent<DraggableCoreProps>['props'] = {
   ...draggableCoreDefaultProps,
+  /** Selector to prevent dragging */
   cancel: {
     type: String
   },
+  /** Offset parent element */
   offsetParent: {
     type: Object as PropType<HTMLElement>,
     validator: (value: unknown): boolean => propIsNotNode(value),
   },
+  /** Grid for snapping, e.g. [25, 25] */
   grid: {
     type: Array as PropType<number[]>
   },
+  /** Selector for drag handle */
   handle: {
     type: String,
   },
+  /** Node reference */
   nodeRef: {
     type: Object as PropType<HTMLElement | null>,
     default: () => null,
@@ -216,7 +242,7 @@ export default defineComponent({
     ...draggableCoreProps,
   },
   emits: ['mousedown', 'mouseup', 'touchend'],
-  setup(props: DraggableCoreProps, { slots, emit }){
+  setup(props: DraggableCoreProps, { slots, emit }) {
     const rootElement = ref(null)
     // Default to mouse events (instance-scoped, avoids cross-instance interference).
     let dragEventFor = eventsFor.mouse;
@@ -354,7 +380,7 @@ export default defineComponent({
         }
         event.preventDefault()
         event.stopPropagation()
-        ;(event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.()
+          ; (event as unknown as { stopImmediatePropagation?: () => void }).stopImmediatePropagation?.()
         clearClickSuppression()
       }
 
@@ -433,9 +459,9 @@ export default defineComponent({
         if (typeof maybePointerEvent.pointerId !== 'number') return null
         if (maybePointerEvent.pointerId !== state.pointerIdentifier) return null
         if (typeof maybePointerEvent.clientX === 'number' && typeof maybePointerEvent.clientY === 'number') {
-          const result: { clientX: number; clientY: number } = { 
-            clientX: maybePointerEvent.clientX, 
-            clientY: maybePointerEvent.clientY 
+          const result: { clientX: number; clientY: number } = {
+            clientX: maybePointerEvent.clientX,
+            clientY: maybePointerEvent.clientY
           }
           return result
         }
@@ -445,9 +471,9 @@ export default defineComponent({
       if (typeof state.touchIdentifier === 'number') {
         const touch = getTouch(e as MouseTouchEvent, state.touchIdentifier)
         if (touch && typeof touch.clientX === 'number' && typeof touch.clientY === 'number') {
-          const result: { clientX: number; clientY: number } = { 
-            clientX: touch.clientX, 
-            clientY: touch.clientY 
+          const result: { clientX: number; clientY: number } = {
+            clientX: touch.clientX,
+            clientY: touch.clientY
           }
           return result
         }
@@ -456,9 +482,9 @@ export default defineComponent({
 
       const maybeMouseEvent = e as unknown as { clientX?: unknown; clientY?: unknown }
       if (typeof maybeMouseEvent.clientX === 'number' && typeof maybeMouseEvent.clientY === 'number') {
-        const result: { clientX: number; clientY: number } = { 
-          clientX: maybeMouseEvent.clientX, 
-          clientY: maybeMouseEvent.clientY 
+        const result: { clientX: number; clientY: number } = {
+          clientX: maybeMouseEvent.clientX,
+          clientY: maybeMouseEvent.clientY
         }
         return result
       }
@@ -671,7 +697,7 @@ export default defineComponent({
       if (!lastEvent) return
       const pos = getEventClientPosition(lastEvent)
       if (!pos) return
-      
+
       const posClientX: number = pos.clientX
       const posClientY: number = pos.clientY
 
@@ -946,7 +972,7 @@ export default defineComponent({
 
       // Skip useless drag (no movement).
       if (x === state.lastX && y === state.lastY) return;
-  
+
       // Snap to grid if prop has been provided
       if (Array.isArray(props.grid)) {
         let deltaX = x - state.lastX, deltaY = y - state.lastY;
@@ -954,18 +980,18 @@ export default defineComponent({
         if (!deltaX && !deltaY) return; // skip useless drag
         x = state.lastX + deltaX, y = state.lastY + deltaY;
       }
-  
+
       const coreEvent = createCoreData({ props, findDOMNode, state }, x, y);
-  
+
       log('DraggableCore: handleDrag: %j', coreEvent);
-      
+
       // Call event handler. If it returns explicit false, trigger end.
       const shouldUpdate = props.dragFn !== noop ? props.dragFn?.(e as DraggableEvent, coreEvent) : undefined;
       if (shouldUpdate === false || state.mounted === false) {
         handleDragStop(e);
         return;
       }
-  
+
       state.lastX = x;
       state.lastY = y;
       hasDragged = true;
@@ -985,13 +1011,13 @@ export default defineComponent({
       cancelAutoScrollRaf();
       autoScrollContainers = [];
       autoScrollLastEvent = null;
-      
+
       const thisNode = findDOMNode();
       if (state.dragging) {
         const position = getControlPosition(e, { props, findDOMNode }, state.touchIdentifier);
         if (position == null) return;
         let { x, y } = position;
-    
+
         // Snap to grid if prop has been provided
         if (Array.isArray(props.grid)) {
           let deltaX = x - state.lastX || 0;
@@ -999,25 +1025,25 @@ export default defineComponent({
           [deltaX, deltaY] = snapToGrid(props.grid as [number, number], deltaX, deltaY);
           x = state.lastX + deltaX, y = state.lastY + deltaY;
         }
-    
+
         const coreEvent = createCoreData({ props, findDOMNode, state }, x, y);
-    
+
         // Call event handler
         const shouldContinue = props.stopFn !== noop ? props.stopFn?.(e as DraggableEvent, coreEvent) : undefined;
         if (shouldContinue === false || state.mounted === false) return false;
-    
+
         if (thisNode) {
           // Remove user-select hack
           if (props.enableUserSelectHack) removeUserSelectStyles(thisNode.ownerDocument);
         }
-    
+
         log('DraggableCore: handleDragStop: %j', coreEvent);
       }
 
       if (thisNode && state.dragging && hasDragged) {
         installClickSuppression(thisNode.ownerDocument)
       }
-  
+
       // Reset the el.
       state.dragging = false;
       state.lastX = NaN;
@@ -1039,7 +1065,7 @@ export default defineComponent({
       dragStartDelayEvent = null;
       clearDragStartDelayTimer();
       hasDragged = false;
-  
+
       if (thisNode) {
         // Remove event handlers
         log('DraggableCore: Removing handlers');
@@ -1054,21 +1080,21 @@ export default defineComponent({
     const handleDragStart: EventHandler<MouseTouchPointerEvent> = e => {
       // Make it possible to attach event handlers on top of this one.
       emit('mousedown', e)
-  
+
       // Only accept left-clicks.
       if (
         !props.allowAnyClick
         && typeof e.button === 'number'
         && e.button !== 0
       ) return false;
-  
+
       // Get nodes. Be sure to grab relative document (could be iframed)
       const thisNode = findDOMNode() as HTMLElement;
       if (!thisNode?.ownerDocument?.body) {
         // throw new Error('<DraggableCore> not mounted on DragStart!');
       }
       const { ownerDocument } = thisNode;
-  
+
       // Short circuit if handle or cancel prop was provided and selector doesn't match.
       if (
         props.disabled
@@ -1088,7 +1114,7 @@ export default defineComponent({
       ) {
         return;
       }
-  
+
       // Track which pointer/touch is active so multi-touch / multi-pointer doesn't interfere.
       const pointerEvent = isPointerEvent(e) ? e : null
       state.pointerIdentifier = pointerEvent ? pointerEvent.pointerId : null
@@ -1098,7 +1124,7 @@ export default defineComponent({
       const position = getControlPosition(e, { props, findDOMNode }, touchIdentifier);
       if (position == null) return;
       const { x, y } = position;
-  
+
       // Create an event object with all the data parents need to make a decision here.
       draggingNode = thisNode;
       pendingDragEvent = null;
@@ -1140,7 +1166,7 @@ export default defineComponent({
         const started = startDrag(e, x, y)
         if (started === false) return false
       }
-  
+
       // Add events to the document directly so we catch when the user's mouse/touch moves outside of
       // this element. We use different events depending on whether or not we have detected that this
       // is a touch-capable device.
@@ -1180,7 +1206,7 @@ export default defineComponent({
       const ownerWindow = getOwnerWindow()
       if (typeof (ownerWindow as unknown as { PointerEvent?: unknown }).PointerEvent !== 'undefined') return
       dragEventFor = eventsFor.mouse;
-  
+
       return handleDragStop(e);
     };
 
@@ -1191,14 +1217,14 @@ export default defineComponent({
       }
       // We're on a touch device now, so change the event handlers
       dragEventFor = eventsFor.touch;
-  
+
       return handleDragStart(e);
     };
 
     const onTouchend: EventHandler<MouseTouchPointerEvent> = e => {
       // We're on a touch device now, so change the event handlers
       dragEventFor = eventsFor.touch;
-  
+
       return handleDragStop(e);
     };
 

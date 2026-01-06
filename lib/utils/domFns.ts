@@ -2,7 +2,7 @@
  * Provides utility functions for DOM manipulation and event handling.
  */
 
-import browserPrefix, {browserPrefixToKey} from './getPrefix'
+import browserPrefix, { browserPrefixToKey } from './getPrefix'
 import { findInArray, int, isFunction } from './shims'
 
 import { ControlPosition, MouseTouchEvent, MouseTouchPointerEvent, PositionOffsetControlPosition, EventHandler, CompatibleElement } from './types'
@@ -71,7 +71,7 @@ export const matchesSelector = (el: Node, selector: string): boolean => {
       'mozMatchesSelector',
       'msMatchesSelector',
       'oMatchesSelector'
-    ], function (method: string){
+    ], function (method: string) {
       return isFunction(el[method])
     })
   }
@@ -110,7 +110,7 @@ export const matchesSelectorAndParentsTo = (el: Node, selector: string, baseNode
  */
 export const addEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchPointerEvent>, inputOptions?: AddEventListenerOptions): void => {
   if (!el) return
-  const options = {capture: true, ...inputOptions}
+  const options = { capture: true, ...inputOptions }
   if (el.addEventListener) {
     el.addEventListener(event, handler as EventListener, options)
   } else if (el.attachEvent) {
@@ -130,7 +130,7 @@ export const addEvent = (el: CompatibleElement, event: string, handler: EventHan
  */
 export const removeEvent = (el: CompatibleElement, event: string, handler: EventHandler<MouseTouchPointerEvent>, inputOptions?: AddEventListenerOptions): void => {
   if (!el) return
-  const options = {capture: true, ...inputOptions}
+  const options = { capture: true, ...inputOptions }
   if (el.removeEventListener) {
     el.removeEventListener(event, handler as EventListener, options)
   } else if (el.detachEvent) {
@@ -204,13 +204,13 @@ export const innerWidth = (node: HTMLElement): number => {
  * @param scale - The scale factor to apply to the offset.
  * @returns The X and Y offset from the parent element.
  */
-export const offsetXYFromParent = (evt: {clientX: number, clientY: number}, offsetParent: HTMLElement, scale: number): ControlPosition => {
+export const offsetXYFromParent = (evt: { clientX: number, clientY: number }, offsetParent: HTMLElement, scale: number): ControlPosition => {
   const offsetParentRect = getOffsetParentRect(offsetParent)
 
   const x = (evt.clientX + offsetParent.scrollLeft - offsetParentRect.left) / scale
   const y = (evt.clientY + offsetParent.scrollTop - offsetParentRect.top) / scale
 
-  return {x, y}
+  return { x, y }
 }
 
 /**
@@ -221,7 +221,7 @@ export const offsetXYFromParent = (evt: {clientX: number, clientY: number}, offs
  * @param unitSuffix - The unit to use for the position values.
  * @returns A CSS transform string.
  */
-export const getTranslation = ({x, y}: ControlPosition, positionOffset: PositionOffsetControlPosition, unitSuffix: string): string => {
+export const getTranslation = ({ x, y }: ControlPosition, positionOffset: PositionOffsetControlPosition, unitSuffix: string): string => {
   let translation = `translate(${x}${unitSuffix},${y}${unitSuffix})`
   if (positionOffset) {
     const defaultX = `${(typeof positionOffset.x === 'string') ? positionOffset.x : positionOffset.x + unitSuffix}`
@@ -240,7 +240,7 @@ export const getTranslation = ({x, y}: ControlPosition, positionOffset: Position
  */
 export const createCSSTransform = (controlPos: ControlPosition, positionOffset: PositionOffsetControlPosition): unknown => {
   const translation = getTranslation(controlPos, positionOffset, 'px')
-  return {[transformKey]: translation }
+  return { [transformKey]: translation }
 }
 
 /**
@@ -262,9 +262,9 @@ export const createSVGTransform = (controlPos: ControlPosition, positionOffset: 
  * @param identifier - The identifier of the touch object to retrieve.
  * @returns The touch object, or null if not found.
  */
-export const getTouch = (e: MouseTouchEvent, identifier: number): {clientX: number, clientY: number} => {
+export const getTouch = (e: MouseTouchEvent, identifier: number): { clientX: number, clientY: number } => {
   return (e.targetTouches && findInArray(e.targetTouches, (t: Touch) => identifier === t.identifier)) ||
-         (e.changedTouches && findInArray(e.changedTouches, (t: Touch) => identifier === t.identifier))
+    (e.changedTouches && findInArray(e.changedTouches, (t: Touch) => identifier === t.identifier))
 }
 
 /**
@@ -316,7 +316,7 @@ export const removeClassName = (el: HTMLElement, className: string) => {
  */
 export const addUserSelectStyles = (doc?: Document) => {
   if (!doc) return
-  let styleEl = <HTMLStyleElement> doc.getElementById('vue-draggable-style-el')
+  let styleEl = <HTMLStyleElement>doc.getElementById('vue-draggable-style-el')
   if (!styleEl) {
     styleEl = doc.createElement('style')
     styleEl.type = 'text/css'
@@ -340,4 +340,15 @@ export const removeUserSelectStyles = (doc?: Document) => {
   if (selection && selection.type !== 'Caret') {
     selection.removeAllRanges();
   }
+}
+
+/**
+ * Sets the transform style of an element.
+ * 
+ * @param el - The element to set the transform on.
+ * @param translation - The translation string.
+ */
+export const setTransform = (el: HTMLElement, translation: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  el.style[transformKey as any] = translation
 }
